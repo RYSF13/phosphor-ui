@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>PhosphorUI - v1.0.0 Interface</title>
+		<link rel="stylesheet" href="phosphor-ui.min.css">
+	</head>
+	<body>
+		<div id="demoModal" class="ph-overlay">
+			<div class="ph-modal-content">
+				<h3 class="ph-heading text-red">System Override</h3>
+				<p class="mb-6">Critical Alert: Re-calibrating flux capacitors will drain the auxiliary battery cells. Confirm execution?</p>
+				<div class="flex justify-end gap-2"><button class="ph-button ph-btn-square" data-ph-dismiss="modal">Abort</button><button class="ph-button ph-button-reversed-amber ph-btn-cut" data-ph-dismiss="modal">Execute</button></div>
+			</div>
+		</div>
+		<header class="ph-pageheader">
+			<div class="flex items-center">
+				<div class="ph-mobile-toggle"><i class="ri-menu-line"></i></div>
+				<div class="ph-logo text-amber"><i class="ri-dashboard-2-line"></i>PHOSPHOR_UI</div>
+			</div>
+			<div class="flex items-center gap-4">
+				<div class="ph-actionbar"><button class="ph-iconbutton"><i class="ri-github-fill"></i></button><button class="ph-iconbutton"><i class="ri-settings-3-line"></i></button></div>
+				<div class="ph-label text-green font-bold border-green hidden md-block">v1.0.0</div>
+			</div>
+		</header>
+		<div class="ph-splitpagelayout">
+			<aside class="ph-sidebar flex flex-col justify-between">
+				<div>
+					<div class="ph-block bg-default p-2 mb-4">
+						<div class="ph-statelabel text-cyan text-center w-full">STATUS: ONLINE</div>
+					</div>
+					<nav>
+						<ul class="ph-list lh-2">
+							<li><a href="#" class="ph-link">Mainframe</a></li>
+							<li>
+								<a href="#" class="ph-link">Modules</a>
+								<ul class="ph-list ml-4">
+									<li><a href="#" class="ph-link">Data Entry</a></li>
+									<li><a href="#" class="ph-link">Visuals</a></li>
+								</ul>
+							</li>
+							<li><a href="#" class="ph-link">Config</a></li>
+							<li><a href="#" class="ph-link">Logs</a></li>
+						</ul>
+					</nav>
+				</div>
+				<div class="mt-8">
+					<label class="ph-label mb-2 block">Storage Load</label>
+					<div class="ph-progressbar mb-2">
+						<div class="ph-progress-fill w-full" style="width: 68%;"></div>
+					</div>
+					<div class="text-sm text-right text-default opacity-50">68% USED</div>
+				</div>
+			</aside>
+			<main class="ph-main">
+				<div class="ph-breadcrumbs mb-4">                /<span>root</span>/<span>phosphor</span>/<span>interface</span></div>
+				<div class="ph-banner ph-banner-amber bg-hatch-amber">
+					<div class="flex items-center gap-2"><i class="ri-alert-line text-lg"></i><span>SYSTEM UPDATE: Firmware patch 1.0.0 available.</span></div>
+					<span class="ph-banner-close"><i class="ri-close-line"></i></span>
+				</div>
+				<div class="ph-block bg-grid">
+					<h1 class="ph-heading text-xxl">Explore the<span class="highlight-amber">Retro Futurism</span></h1>
+					<p class="mw-800 mb-8 text-lg">                    PhosphorUI is a high-contrast, high-density interface system designed for mission-critical operations.                     No round corners. No compromise.</p>
+					<div class="ph-buttongroup"><button class="ph-button ph-button-reversed-amber ph-btn-bi-cut">Initialize</button><button class="ph-button ph-button-cyan ph-btn-cut">Documentation</button></div>
+				</div>
+				<h3 class="ph-heading mt-8">Subsystems</h3>
+				<div class="ph-columns ph-col-3">
+					<div class="ph-block">
+						<h4 class="text-amber mb-4 uppercase font-bold">// Core Kernel</h4>
+						<ul class="ph-list">
+							<li><a href="#" class="ph-link">Boot Sequence</a></li>
+							<li><a href="#" class="ph-link">Memory Stack</a></li>
+							<li><a href="#" class="ph-link">CPU Cycle</a></li>
+						</ul>
+					</div>
+					<div class="ph-block">
+						<h4 class="text-cyan mb-4 uppercase font-bold">// Network</h4>
+						<ul class="ph-list">
+							<li><a href="#" class="ph-link">Uplink Status</a></li>
+							<li><a href="#" class="ph-link">Proxy Config</a></li>
+							<li><a href="#" class="ph-link">Firewall</a></li>
+						</ul>
+					</div>
+					<div class="ph-block">
+						<h4 class="text-red mb-4 uppercase font-bold">// Security</h4>
+						<ul class="ph-list">
+							<li><a href="#" class="ph-link">Encryption</a></li>
+							<li><a href="#" class="ph-link">Access Logs</a></li>
+							<li><a href="#" class="ph-link">Key Gen</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="ph-block flex items-center justify-between flex-wrap gap-4">
+					<span class="ph-label text-lg">Quick Actions</span>
+					<div class="ph-actionbar"><button class="ph-iconbutton text-red"><i class="ri-shut-down-line"></i></button><button class="ph-iconbutton text-cyan"><i class="ri-wifi-line"></i></button><button class="ph-iconbutton text-green"><i class="ri-battery-charge-line"></i></button><button class="ph-iconbutton text-amber"><i class="ri-database-2-line"></i></button><button class="ph-iconbutton"><i class="ri-printer-line"></i></button></div>
+				</div>
+				<div class="ph-divider"></div>
+				<div class="ph-columns ph-col-2">
+					<div class="ph-block">
+						<h4 class="ph-heading">Control Panel</h4>
+						<div class="mb-4">
+							<label class="ph-label-amber mb-2 block">System Mode</label>
+							<div class="ph-segmentedcontrol">
+								<div class="ph-segment-btn active">MANUAL</div>
+								<div class="ph-segment-btn">AUTO</div>
+								<div class="ph-segment-btn">AI</div>
+							</div>
+						</div>
+						<div class="mb-4 flex items-center justify-between">
+							<div><label class="ph-label-cyan mr-2">Power</label><label class="ph-toggleswitch"><input type="checkbox" checked><span class="ph-slider"></span></label><span class="text-green ml-4 font-bold">ONLINE</span></div>
+							<button class="ph-button ph-button-red ph-btn-square p-2" data-ph-toggle="modal" data-ph-target="demoModal"><i class="ri-alert-fill mr-2"></i>OVERRIDE</button>
+						</div>
+						<div class="ph-inlinemessage"><i class="ri-information-line"></i><span>Changes are committed to the tape drive immediately.</span></div>
+					</div>
+					<div class="ph-block">
+						<h4 class="ph-heading">Data Entry</h4>
+						<input type="text" class="ph-textinput" placeholder="User Identification...">
+						<select class="ph-select">
+							<option>Sector 7 (Industrial)</option>
+							<option>Sector 8 (Residential)</option>
+							<option>Sector 9 (Research)</option>
+						</select>
+						<textarea class="ph-textarea" rows="3" placeholder="Enter command parameters..."></textarea>
+						<button class="ph-button ph-button-cyan ph-btn-bi-cut w-full">EXECUTE COMMAND</button>
+					</div>
+				</div>
+				<div class="ph-block">
+					<div class="flex justify-between items-center mb-4">
+						<h4 class="ph-heading m-0">Active Processes</h4>
+						<div class="ph-actionbar"><button class="ph-iconbutton"><i class="ri-refresh-line"></i></button></div>
+					</div>
+					<table class="ph-datatable">
+						<thead>
+							<tr>
+								<th>PID</th>
+								<th>USER</th>
+								<th>CPU%</th>
+								<th>STATUS</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>1024</td>
+								<td>root</td>
+								<td>0.5</td>
+								<td class="text-green">ACTIVE</td>
+							</tr>
+							<tr>
+								<td>8821</td>
+								<td>guest</td>
+								<td>12.4</td>
+								<td class="text-amber">SLEEP</td>
+							</tr>
+							<tr>
+								<td>9901</td>
+								<td>admin</td>
+								<td>45.2</td>
+								<td class="text-red">ERROR</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="flex justify-end gap-2 mt-4"><button class="ph-button ph-btn-square p-2">&lt;</button><button class="ph-button ph-btn-square ph-button-reversed-amber p-2">1</button><button class="ph-button ph-btn-square p-2">2</button><button class="ph-button ph-btn-square p-2">&gt;</button></div>
+				</div>
+				<div class="ph-block">
+					<h4 class="ph-heading">Audit Trail</h4>
+					<div class="ph-timeline">
+						<div class="ph-timeline-item">
+							<div class="text-cyan text-sm">10:42:01</div>
+							<div>System Boot Sequence initiated by <span class="highlight-cyan">ADMIN</span>.</div>
+						</div>
+						<div class="ph-timeline-item">
+							<div class="text-cyan text-sm">10:42:05</div>
+							<div>Connection established to remote mainframe.</div>
+						</div>
+						<div class="ph-timeline-item">
+							<div class="text-cyan text-sm">10:43:00</div>
+							<div class="ph-truncate mw-600">Encrypted data packet received from sector 7 [TRUNCATED]: "Lorem ipsum dolor sit amet"</div>
+						</div>
+					</div>
+				</div>
+				<div class="ph-block">
+					<h4 class="ph-heading">System Specs</h4>
+					<details class="ph-details mb-2" open>
+						<summary>Hardware</summary>
+						<div class="content">                        Processor: 8-Core Neural Net<br>                        RAM: 64TB Crystal Storage</div>
+					</details>
+					<details class="ph-details">
+						<summary>Software</summary>
+						<div class="content">                        OS: PhosphorOS v1.0.0<br>                        Build: 2077-RC1</div>
+					</details>
+				</div>
+		</div>
+		</main></div><script src="phosphor-ui.min.js"></script>
+	</body>
+</html>
