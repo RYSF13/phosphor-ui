@@ -1,6 +1,6 @@
 /*
  * PhosphorUI - Explore the retro futuism
- * v1.0.0
+ * v1.1.0
  * Concept: Light, Pragmatic, Retro-Future
  * Author: Robert Y. Stanford(gh@RYSF13)
  * License: MIT
@@ -34,7 +34,7 @@
 			}, observerOptions);
 
 			// Target core structural elements
-			const targets = document.querySelectorAll('.ph-block, .ph-heading, .ph-columns, .ph-banner, .ph-datatable, .ph-timeline-item');
+			const targets = document.querySelectorAll('.ph-block, .ph-columns, .ph-banner, .ph-datatable, .ph-timeline-item, li');
 			targets.forEach(el => {
 				el.classList.add('ph-animate-scroll');
 				observer.observe(el);
