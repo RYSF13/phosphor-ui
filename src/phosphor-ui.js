@@ -1,6 +1,6 @@
 /*
  * PhosphorUI - Explore the retro futuism
- * v1.1.0
+ * v1.1.1
  * Concept: Light, Pragmatic, Retro-Future
  * Author: Robert Y. Stanford(gh@RYSF13)
  * License: MIT
