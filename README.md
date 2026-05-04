@@ -4,7 +4,7 @@
 
 A lightweight, pragmatic CSS/JS framework with a retro-futuristic aesthetic. PhosphorUI brings the nostalgic charm of CRT monitors, terminal interfaces, and 80s sci-fi design to modern web development.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/RYSF13/phosphor-ui)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](https://github.com/RYSF13/phosphor-ui)
 
 ## ✨ Features
 
