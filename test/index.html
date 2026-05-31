@@ -1,243 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>PhosphorUI - v1.1.1 Interface</title>
-		<link rel="stylesheet" href="../phosphor-ui.min.css">
-	</head>
-	<body>
-		<div id="demoModal" class="ph-overlay">
-			<div class="ph-modal-content">
-				<h3 class="ph-heading text-red">System Override</h3>
-				<p class="mb-6">Critical Alert: Re-calibrating flux capacitors will drain the auxiliary battery cells. Confirm execution?</p>
-				<div class="flex justify-end gap-2"><button class="ph-button ph-btn-square" data-ph-dismiss="modal">Abort</button><button class="ph-button ph-button-reversed-amber ph-btn-cut" data-ph-dismiss="modal">Execute</button></div>
-			</div>
+<head>
+	<!--    ____  __                     __               __  ______
+	       / __ \/ /_  ____  _________  / /_  ____  _____/ / / /  _/
+	      / /_/ / __ \/ __ \/ ___/ __ \/ __ \/ __ \/ ___/ / / // /  
+	     / ____/ / / / /_/ (__  ) /_/ / / / / /_/ / /  / /_/ // /   
+	    /_/   /_/ /_/\____/____/ .___/_/ /_/\____/_/   \____/___/   
+	                          /_/                 Robert Y. Stanford
+	-->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PhosphorUI 1.2.0 - System Terminal</title>
+	<!-- Import core stylesheet -->
+	<link rel="stylesheet" href="phosphor-ui.css">
+	<style>
+	</style>
+</head>
+<body>
+
+	<!-- 1. Page Layout: Fixed Top Header -->
+	<header class="ph-pageheader">
+		<div class="ph-logo">PHOSPHOR_UI <span class="ph-text-amber">v1.2.0</span></div>
+		<!-- Basic actions/status -->
+		<div style="display:flex; gap:15px; align-items:center;">
+			<span class="ph-badge ph-badge-cyan" style="display:none; @media(min-width:768px){display:inline-flex;}">SYSTEM ONLINE</span>
+		<button class="ph-mobile-toggle" aria-label="Toggle Menu">
+			<i class="ri-menu-line"></i>
+		</button>
 		</div>
-		<header class="ph-pageheader">
-			<div class="flex items-center">
-				<div class="ph-mobile-toggle"><i class="ri-menu-line"></i></div>
-				<div class="ph-logo text-amber"><i class="ri-dashboard-2-line"></i>PHOSPHOR_UI</div>
+		
+	</header>
+
+	<!-- 2. Split / Columns Container (Sidebar + Main) -->
+	<div class="ph-splitpagelayout">
+		
+		<!-- Sidebar: Navigation & File Tree -->
+		<aside class="ph-sidebar">
+			<div class="ph-mb-4">
+				<span class="ph-form-label">Main Directory</span>
+				<!-- Nav Menu -->
+				<ul class="ph-nav-menu">
+					<li><a href="#sec-layout" class="active"><i class="ri-layout-grid-line"></i> Layout & Typography</a></li>
+					<li><a href="#sec-forms"><i class="ri-keyboard-line"></i> Forms & Inputs</a></li>
+					<li><a href="#sec-actions"><i class="ri-terminal-window-line"></i> Actions & Buttons</a></li>
+					<li><a href="#sec-display"><i class="ri-dashboard-2-line"></i> Data Display</a></li>
+					<li><a href="#sec-feedback"><i class="ri-feedback-line"></i> Overlays & Alerts</a></li>
+				</ul>
 			</div>
-			<div class="flex items-center gap-4">
-				<div class="ph-actionbar"><button class="ph-iconbutton"><a href="https://github.com/RYSF13/phosphor-ui/"><i class="ri-github-fill"></i></a></button><button class="ph-iconbutton"><i class="ri-settings-3-line"></i></button></div>
-				<div class="ph-label text-green font-bold border-green hidden md-block">v1.1.1</div>
+
+			<div class="ph-mb-4">
+				<span class="ph-form-label">System Files (Tree)</span>
+				<!-- File Tree -->
+				<ul class="ph-file-tree">
+					<li><i class="ri-folder-open-line ph-text-amber"></i> Root
+						<ul>
+							<li><i class="ri-file-code-line"></i> phosphor-ui.css</li>
+							<li><i class="ri-file-code-line"></i> phosphor-ui.js</li>
+							<li><i class="ri-image-line"></i> scanline.png</li>
+						</ul>
+					</li>
+				</ul>
 			</div>
-		</header>
-		<div class="ph-splitpagelayout">
-			<aside class="ph-sidebar flex flex-col justify-between">
-				<div>
-					<div class="ph-block bg-default p-2 mb-4">
-						<div class="ph-statelabel text-cyan text-center w-full">STATUS: ONLINE</div>
+		</aside>
+
+		<!-- Main Content Area -->
+		<main class="ph-main">
+			
+			<!-- Breadcrumbs -->
+			<nav class="ph-breadcrumbs ph-mb-8">
+				<span>System</span>
+				<span>Documentation</span>
+				<span>Components</span>
+			</nav>
+
+			<!-- Anchor Nav & Header -->
+			<h1 class="ph-text-amber ph-mb-4" style="font-family: var(--ph-font-display); font-size: 2rem; border-bottom: 2px solid var(--ph-surface-3); padding-bottom: 10px;">
+				UI Component Blueprint
+			</h1>
+			<p class="ph-mb-8">This documentation showcases all component elements defined in the PhosphorUI library and how they integrate within a practical environment. This page serves not only as a testing benchmark but also as a paradigm for terminal operations.</p>
+
+			<!-- ==========================================
+				 SECTION 1: LAYOUT, MEDIA & TYPOGRAPHY 
+				 ========================================== -->
+			<section id="sec-layout" class="ph-mb-8">
+				<h2 class="ph-text-cyan ph-mb-4" style="font-family: var(--ph-font-display);">01 // Layout & Media Composites</h2>
+				
+				<!-- Media Object: Image Left, Text Right -->
+				<div class="ph-media-object ph-block">
+					<!-- Image component, utilizing background pattern as placeholder -->
+					<div class="ph-img" style="height:200px; display:flex; align-items:center; justify-content:center;">
+						<i class="ri-image-line" style="font-size:3rem; color:var(--ph-surface-3)"></i>
 					</div>
-					<nav>
-						<ul class="ph-list lh-2">
-							<li><a href="#" class="ph-link">Mainframe</a></li>
-							<li>
-								<a href="#" class="ph-link">Modules</a>
-								<ul class="ph-list ml-4">
-									<li><a href="#" class="ph-link">Data Entry</a></li>
-									<li><a href="#" class="ph-link">Visuals</a></li>
-								</ul>
-							</li>
-							<li><a href="#" class="ph-link">Config</a></li>
-							<li><a href="#" class="ph-link">Logs</a></li>
-						</ul>
-					</nav>
-				</div>
-				<div class="mt-8">
-					<label class="ph-label mb-2 block">Storage Load</label>
-					<div class="ph-progressbar mb-2">
-						<div class="ph-progress-fill w-full" style="width: 68%;"></div>
+					<div class="ph-media-body">
+						<h3 class="ph-text-amber ph-mb-4">Standard Media Object & Block Container</h3>
+						<p class="ph-mb-4">The Media Object composite utilizes Flexbox, ideal for news feeds, user profiles, or data briefings. The left side is a strictly width-controlled image placeholder, while the right side adaptively fills the remaining space. At mobile breakpoints, the component automatically stacks vertically to ensure readability.</p>
+						<p>The outer container uses the <strong>Box / Block</strong> component, featuring cyberpunk-style cut-corner borders (achieved via pseudo-elements) to establish the retro-futuristic visual foundation.</p>
 					</div>
-					<div class="text-sm text-right text-default opacity-50">68% USED</div>
-				</div>
-			</aside>
-			<main class="ph-main">
-				<div class="ph-breadcrumbs mb-4">								/<span>root</span>/<span>phosphor</span>/<span>interface</span></div>
-				<div class="ph-banner ph-banner-amber bg-hatch-amber">
-					<div class="flex items-center gap-2"><i class="ri-alert-line text-lg"></i><span>SYSTEM UPDATE: Firmware patch 1.1.1 available.</span></div>
-					<span class="ph-banner-close"><i class="ri-close-line"></i></span>
-				</div>
-				<div class="ph-block bg-grid">
-					<h1 class="ph-heading text-xxl">Explore the<span class="highlight-amber">Retro Futurism</span></h1>
-					<p class="mw-800 mb-8 text-lg">										PhosphorUI is a high-contrast, high-density interface system designed for mission-critical operations.										 No round corners. No compromise.</p>
-					<div class="ph-buttongroup"><button class="ph-button ph-button-reversed-amber ph-btn-bi-cut">Initialize</button><button class="ph-button ph-button-cyan ph-btn-cut">Documentation</button></div>
-				</div>
-				<h3 class="ph-heading mt-8">Subsystems</h3>
-				<div class="ph-columns ph-col-3">
-					<div class="ph-block">
-						<h4 class="text-amber mb-4 uppercase font-bold">// Core Kernel</h4>
-						<ul class="ph-list">
-							<li><a href="#" class="ph-link">Boot Sequence</a></li>
-							<li><a href="#" class="ph-link">Memory Stack</a></li>
-							<li><a href="#" class="ph-link">CPU Cycle</a></li>
-						</ul>
-					</div>
-					<div class="ph-block">
-						<h4 class="text-cyan mb-4 uppercase font-bold">// Network</h4>
-						<ul class="ph-list">
-							<li><a href="#" class="ph-link">Uplink Status</a></li>
-							<li><a href="#" class="ph-link">Proxy Config</a></li>
-							<li><a href="#" class="ph-link">Firewall</a></li>
-						</ul>
-					</div>
-					<div class="ph-block">
-						<h4 class="text-red mb-4 uppercase font-bold">// Security</h4>
-						<ul class="ph-list">
-							<li><a href="#" class="ph-link">Encryption</a></li>
-							<li><a href="#" class="ph-link">Access Logs</a></li>
-							<li><a href="#" class="ph-link">Key Gen</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="ph-block flex items-center justify-between flex-wrap gap-4">
-					<span class="ph-label text-lg">Quick Actions</span>
-					<div class="ph-actionbar"><button class="ph-iconbutton text-red"><i class="ri-shut-down-line"></i></button><button class="ph-iconbutton text-cyan"><i class="ri-wifi-line"></i></button><button class="ph-iconbutton text-green"><i class="ri-battery-charge-line"></i></button><button class="ph-iconbutton text-amber"><i class="ri-database-2-line"></i></button><button class="ph-iconbutton"><i class="ri-printer-line"></i></button></div>
 				</div>
 
-				<div class="ph-columns ph-col-2">
+				<!-- Media Object: Text Left, Image Right (Reversed) -->
+				<div class="ph-media-object ph-media-reverse ph-block">
+					<div class="ph-img" style="height:200px; display:flex; align-items:center; justify-content:center;">
+						<i class="ri-radar-line" style="font-size:3rem; color:var(--ph-surface-3)"></i>
+					</div>
+					<div class="ph-media-body">
+						<h3 class="ph-text-cyan ph-mb-4">Reversed Layout & Code Display</h3>
+						<p class="ph-mb-4">By appending the <code>.ph-media-reverse</code> modifier, the visual focus shifts smoothly to the right. Alternating media layouts in dev docs or product manuals effectively reduces visual fatigue.</p>
+						<!-- Code Block -->
+						<div class="ph-code-block ph-mb-4">world.execute(me);</div>
+					</div>
+				</div>
 
-					<div class="ph-card">
-						<div class="ph-card-img-area bg-grid">
-							<div class="ph-card-img-tag">
-								<span class="ph-label-amber">RETRO AESTHETIC</span>
-							</div>
-							<div class="ph-card-img">P·U·I</div>
-						</div>
-						<div class="ph-card-body">
-							<div class="ph-card-title">PhosphorUI</div>
-							<p class="ph-card-desc">
-								A retro-futuristic CSS/JS UI library with CRT aesthetics,
-								scan-line overlays, and phosphor-glow components.
-							</p>
-							<a href="https://github.com/RYSF13/phosphor-ui" target="_blank"
-								 class="ph-button ph-button-cyan ph-btn-cut"
-								 style="font-size: 0.75rem; padding: 8px 16px;">
-								<i class="ri-arrow-right-up-line mr-2"></i>View Repo
-							</a>
+				<!-- Divider -->
+				<div class="ph-divider" style="background-color: transparent; border-top: 2px dashed var(--ph-surface-3); margin: 40px 0;"></div>
+
+				<!-- Grid (Responsive 2-Col / 3-Col) -->
+				<h3 class="ph-text-amber ph-mb-4">Responsive Data Columns (2-Col & 3-Col Grid)</h3>
+				<p class="ph-mb-4">The Grid component leverages CSS Grid's <code>auto-fit</code> property. Regardless of the number of child elements, the system intelligently wraps based on available width. Parallel display on desktop; single-column stack on mobile.</p>
+				
+				<div class="ph-grid ph-grid-cols-3 ph-mb-4">
+					<!-- Card 1 -->
+					<div class="ph-card" style="padding: 15px; border: 1px solid var(--ph-surface-3);">
+						<div class="ph-form-label">CPU LOAD</div>
+						<div class="ph-stat-value ph-text-green">45%</div>
+						<!-- Progress Bar -->
+						<div style="background:var(--ph-surface-2); height:4px; width:100%; margin-top:10px;">
+							<div style="background:var(--ph-green); height:100%; width:45%;"></div>
 						</div>
 					</div>
-
-					<div class="ph-card">
-						<div class="ph-card-img-area bg-hatch">
-							<div class="ph-card-img-tag">
-								<span class="ph-label-cyan">FUNCTIONAL</span>
-							</div>
-							<div class="ph-card-img">L·C·V</div>
+					<!-- Card 2 -->
+					<div class="ph-card" style="padding: 15px; border: 1px solid var(--ph-surface-3);">
+						<div class="ph-form-label">MEMORY</div>
+						<div class="ph-stat-value ph-text-amber">12 GB</div>
+						<div style="background:var(--ph-surface-2); height:4px; width:100%; margin-top:10px;">
+							<div style="background:var(--ph-amber); height:100%; width:75%;"></div>
 						</div>
-						<div class="ph-card-body">
-							<div class="ph-card-title">Lambda Calculus Visualizer</div>
-							<p class="ph-card-desc">
-								Visualize complex lambda calculations and provide debugging functions.
-							</p>
-							<a href="" target="_blank"
-								 class="ph-button ph-button-cyan ph-btn-cut"
-								 style="font-size: 0.75rem; padding: 8px 16px;">
-								<i class="ri-arrow-right-up-line mr-2"></i>Learn more
-							</a>
+					</div>
+					<!-- Card 3 -->
+					<div class="ph-card" style="padding: 15px; border: 1px solid var(--ph-surface-3);">
+						<div class="ph-form-label">NETWORK</div>
+						<div class="ph-stat-value ph-text-cyan">99.9%</div>
+						<div style="background:var(--ph-surface-2); height:4px; width:100%; margin-top:10px;">
+							<div style="background:var(--ph-cyan); height:100%; width:99%;"></div>
+						</div>
+					</div>
+				</div>
+
+			</section>
+
+			<!-- ==========================================
+				 SECTION 2: FORMS & INPUTS
+				 ========================================== -->
+			<section id="sec-forms" class="ph-mb-8">
+				<h2 class="ph-text-cyan ph-mb-4" style="font-family: var(--ph-font-display);">02 // Forms & Data Input</h2>
+				<div class="ph-block">
+					<p class="ph-mb-4">Form elements have been entirely refactored, discarding bloated JS simulation logic. By deeply styling the pseudo-classes of native HTML5 input fields (like Date, Color, File), we achieve a unified geek-terminal aesthetic while preserving native device interaction experiences.</p>
+					
+					<div class="ph-grid ph-grid-cols-2">
+						<!-- Text Input -->
+						<div class="ph-form-field">
+							<label class="ph-form-label">Standard Text Input</label>
+							<input type="text" class="ph-input" placeholder="Enter command...">
+						</div>
+						
+						<!-- Select / Combobox -->
+						<div class="ph-form-field">
+							<label class="ph-form-label">Dropdown (Select)</label>
+							<select class="ph-select">
+								<option>Protocol Alpha</option>
+								<option>Protocol Beta</option>
+								<option>Override Sequence</option>
+							</select>
+						</div>
+
+						<!-- Date Picker -->
+						<div class="ph-form-field">
+							<label class="ph-form-label">Native Date Picker</label>
+							<input type="date" class="ph-input">
+						</div>
+
+						<!-- Color Picker -->
+						<div class="ph-form-field">
+							<label class="ph-form-label">Core Color Picker</label>
+							<input type="color" class="ph-input" value="#00f3f3">
+						</div>
+
+						<!-- File Upload -->
+						<div class="ph-form-field" style="grid-column: 1 / -1;">
+							<label class="ph-form-label">Clearance File Upload</label>
+							<input type="file" class="ph-input" data-tooltip="No file selected">
+						</div>
+
+						<!-- Textarea -->
+						<div class="ph-form-field" style="grid-column: 1 / -1;">
+							<label class="ph-form-label">Command Sequence Area</label>
+							<textarea class="ph-textarea" rows="3" placeholder="> Input manual override codes here..."></textarea>
 						</div>
 					</div>
 
+					<!-- Checkbox, Radio, Switch -->
+					<div class="ph-stack-h ph-mt-4" style="gap: 30px;">
+						<label class="ph-checkbox-wrapper">
+							<input type="checkbox" class="ph-checkbox" checked>
+							<span>Bypass Firewall (Checkbox)</span>
+						</label>
+						
+						<label class="ph-radio-wrapper">
+							<input type="radio" name="node" class="ph-radio" checked>
+							<span>Master Node (Radio)</span>
+						</label>
+						<label class="ph-radio-wrapper">
+							<input type="radio" name="node" class="ph-radio">
+							<span>Backup Node (Radio)</span>
+						</label>
 
+						<div style="display:flex; align-items:center; gap:10px;">
+							<label class="ph-switch">
+								<input type="checkbox" checked>
+								<span class="ph-slider"></span>
+							</label>
+							<span>Open Backdoor (Toggle)</span>
+						</div>
+					</div>
 				</div>
 			</section>
-				<div class="ph-divider"></div>
-				<div class="ph-columns ph-col-2">
-					<div class="ph-block">
-						<h4 class="ph-heading">Control Panel</h4>
-						<div class="mb-4">
-							<label class="ph-label-amber mb-2 block">System Mode</label>
-							<div class="ph-segmentedcontrol">
-								<div class="ph-segment-btn active">MANUAL</div>
-								<div class="ph-segment-btn">AUTO</div>
-								<div class="ph-segment-btn">AI</div>
+
+			<!-- ==========================================
+				 SECTION 3: ACTIONS & NAVIGATION
+				 ========================================== -->
+			<section id="sec-actions" class="ph-mb-8">
+				<h2 class="ph-text-cyan ph-mb-4" style="font-family: var(--ph-font-display);">03 // Execution & Micro-Navigation</h2>
+				
+				<!-- Buttons -->
+				<div class="ph-mb-8">
+					<p class="ph-mb-4">The Button Group demonstrates the built-in multi-state color specifications. The retro-tech feel generated by the dual-layer drop shadow is the core signature of the system.</p>
+					<div class="ph-stack-h">
+						<button class="ph-button">Execute</button>
+						<button class="ph-button ph-btn-cyan">Scan Node</button>
+						<button class="ph-button ph-btn-red">Destroy</button>
+						<button class="ph-button ph-btn-ghost">Abort</button>
+						
+						<!-- Dropdown Button / Action Menu -->
+						<div class="ph-dropdown-wrapper">
+							<button class="ph-button">More Actions <i class="ri-arrow-down-s-line"></i></button>
+							<div class="ph-dropdown-menu">
+								<a class="ph-dropdown-item">Reboot Module</a>
+								<a class="ph-dropdown-item">Clear Cache</a>
+								<div style="border-top:1px solid var(--ph-surface-3); margin:5px 0;"></div>
+								<a class="ph-dropdown-item ph-text-red">Self-Destruct Sequence</a>
 							</div>
 						</div>
-						<div class="mb-4 flex items-center justify-between">
-							<div><label class="ph-label-cyan mr-2">Power</label><label class="ph-toggleswitch"><input type="checkbox" checked><span class="ph-slider"></span></label><span class="text-green ml-4 font-bold">ONLINE</span></div>
-							<button class="ph-button ph-button-red ph-btn-square p-2" data-ph-toggle="modal" data-ph-target="demoModal"><i class="ri-alert-fill mr-2"></i>OVERRIDE</button>
-						</div>
-						<div class="ph-inlinemessage"><i class="ri-information-line"></i><span>Changes are committed to the tape drive immediately.</span></div>
-					</div>
-					<div class="ph-block">
-						<h4 class="ph-heading">Data Entry</h4>
-						<input type="text" class="ph-textinput" placeholder="User Identification...">
-						<select class="ph-select">
-							<option>Sector 7 (Industrial)</option>
-							<option>Sector 8 (Residential)</option>
-							<option>Sector 9 (Research)</option>
-						</select>
-						<textarea class="ph-textarea" rows="3" placeholder="Enter command parameters..."></textarea>
-						<button class="ph-button ph-button-cyan ph-btn-bi-cut w-full">EXECUTE COMMAND</button>
 					</div>
 				</div>
-				<div class="ph-block">
-					<div class="flex justify-between items-center mb-4">
-						<h4 class="ph-heading m-0">Active Processes</h4>
-						<div class="ph-actionbar"><button class="ph-iconbutton"><i class="ri-refresh-line"></i></button></div>
+
+				<!-- Tabs & Pagination & Stepper -->
+				<div class="ph-grid ph-grid-cols-2">
+					<div class="ph-block" style="padding: 15px;">
+						<span class="ph-form-label ph-mb-4">Data Pagination</span>
+						<div class="ph-pagination">
+							<button class="ph-button ph-btn-ghost">&lt;</button>
+							<button class="ph-button active">1</button>
+							<button class="ph-button ph-btn-ghost">2</button>
+							<button class="ph-button ph-btn-ghost">3</button>
+							<button class="ph-button ph-btn-ghost">&gt;</button>
+						</div>
 					</div>
-					<table class="ph-datatable">
+					
+					<div class="ph-block" style="padding: 15px;">
+						<span class="ph-form-label ph-mb-4">Progress Steps</span>
+						<div class="ph-stepper">
+							<div class="ph-step completed" data-tooltip="Connection Est.">1</div>
+							<div class="ph-step active" data-tooltip="Decrypting Data">2</div>
+							<div class="ph-step" data-tooltip="Execute Injection">3</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ==========================================
+				 SECTION 4: DATA DISPLAY
+				 ========================================== -->
+			<section id="sec-display" class="ph-mb-8">
+				<h2 class="ph-text-cyan ph-mb-4" style="font-family: var(--ph-font-display);">04 // Info Matrix & Data Display</h2>
+				
+				<p class="ph-mb-4">This sector contains the Table, Description List, and Badges/Chips. The table's outer wrapper allows horizontal scrolling on small screens to prevent layout breakage.</p>
+
+				<div class="ph-grid ph-grid-cols-2 ph-mb-4">
+					<!-- Description List -->
+					<div class="ph-block">
+						<h3 class="ph-form-label ph-mb-4">Hardware Specs (Desc List)</h3>
+						<dl class="ph-desc-list">
+							<dt>Core Arch</dt>
+							<dd>RISC-V Quantum</dd>
+							<dt>Storage</dt>
+							<dd>Encrypted Vol Mounted</dd>
+							<dt>Access Tags</dt>
+							<dd>
+								<span class="ph-chip">Admin <i class="ri-close-line ph-chip-close"></i></span>
+								<span class="ph-badge ph-badge-amber">SECURE</span>
+							</dd>
+						</dl>
+					</div>
+
+					<!-- States: Skeleton & Empty -->
+					<div class="ph-block">
+						<h3 class="ph-form-label ph-mb-4">Loading & Empty States</h3>
+						<!-- Spinner & Skeleton -->
+						<div class="ph-stack-h ph-mb-4">
+							<div class="ph-spinner"></div>
+							<div class="ph-skeleton" style="height: 20px; width: 150px;"></div>
+						</div>
+						<!-- Empty State -->
+						<div class="ph-empty-state">
+							<i class="ri-hard-drive-2-line"></i>
+							<p>Sector data empty. Please mount disk array.</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- Table (Data Grid) -->
+				<div class="ph-table-container">
+					<table class="ph-table">
 						<thead>
 							<tr>
-								<th>PID</th>
-								<th>USER</th>
-								<th>CPU%</th>
-								<th>STATUS</th>
+								<th>Process ID</th>
+								<th>Module Name</th>
+								<th>Memory Usage</th>
+								<th>Status</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<td>1024</td>
-								<td>root</td>
-								<td>0.5</td>
-								<td class="text-green">ACTIVE</td>
+								<td>#0x00A1</td>
+								<td>Neural_Core.exe</td>
+								<td>4096 MB</td>
+								<td><span class="ph-badge ph-badge-cyan">RUNNING</span></td>
 							</tr>
 							<tr>
-								<td>8821</td>
-								<td>guest</td>
-								<td>12.4</td>
-								<td class="text-amber">SLEEP</td>
+								<td>#0x00A2</td>
+								<td>Visual_Render.dll</td>
+								<td>512 MB</td>
+								<td><span class="ph-badge ph-badge-amber">WAITING</span></td>
 							</tr>
 							<tr>
-								<td>9901</td>
-								<td>admin</td>
-								<td>45.2</td>
-								<td class="text-red">ERROR</td>
+								<td>#0x00B5</td>
+								<td>Malware_Scanner.sys</td>
+								<td>--</td>
+								<td><span class="ph-badge ph-badge-red" style="color:var(--ph-red)">TERMINATED</span></td>
 							</tr>
 						</tbody>
 					</table>
-					<div class="flex justify-end gap-2 mt-4"><button class="ph-button ph-btn-square p-2">&lt;</button><button class="ph-button ph-btn-square ph-button-reversed-amber p-2">1</button><button class="ph-button ph-btn-square p-2">2</button><button class="ph-button ph-btn-square p-2">&gt;</button></div>
 				</div>
-				<div class="ph-block">
-					<h4 class="ph-heading">Audit Trail</h4>
-					<div class="ph-timeline">
-						<div class="ph-timeline-item">
-							<div class="text-cyan text-sm">10:42:01</div>
-							<div>System Boot Sequence initiated by <span class="highlight-cyan">ADMIN</span>.</div>
-						</div>
-						<div class="ph-timeline-item">
-							<div class="text-cyan text-sm">10:42:05</div>
-							<div>Connection established to remote mainframe.</div>
-						</div>
-						<div class="ph-timeline-item">
-							<div class="text-cyan text-sm">10:43:00</div>
-							<div class="ph-truncate mw-600">Encrypted data packet received from sector 7 [TRUNCATED]: "Lorem ipsum dolor sit amet"</div>
-						</div>
-					</div>
+			</section>
+
+			<!-- ==========================================
+				 SECTION 5: FEEDBACK & OVERLAYS
+				 ========================================== -->
+			<section id="sec-feedback" class="ph-mb-8">
+				<h2 class="ph-text-cyan ph-mb-4" style="font-family: var(--ph-font-display);">05 // Feedback Loop & Overlays</h2>
+				
+				<p class="ph-mb-4">Static Alerts are used for documentation warnings, while dynamic Toasts and blocking Modals are triggered by minimal vanilla JS. Note that the Modal implements a Focus Trap internally, fulfilling the requirements for geek-style keyboard-only navigation.</p>
+
+				<!-- Alerts -->
+				<div class="ph-alert ph-alert-info">
+					<i class="ri-information-line" style="font-size:1.2rem;"></i>
+					<div>System Info: Connection routed via proxy server. IP tracking blocked.</div>
 				</div>
-				<div class="ph-block">
-					<h4 class="ph-heading">System Specs</h4>
-					<details class="ph-details mb-2" open>
-						<summary>Hardware</summary>
-						<div class="content">												Processor: 8-Core Neural Net<br>												RAM: 64TB Crystal Storage</div>
-					</details>
-					<details class="ph-details">
-						<summary>Software</summary>
-						<div class="content">												OS: PhosphorOS v1.1.1<br>												Build: 2077-RC1</div>
-					</details>
+				<div class="ph-alert ph-alert-warn">
+					<i class="ri-alert-line" style="font-size:1.2rem;"></i>
+					<div>Security Warning: Unauthorized memory read detected. Recommend launching modal for verification.</div>
 				</div>
+
+				<!-- Action Triggers -->
+				<div class="ph-stack-h ph-mt-4">
+					<button class="ph-button ph-btn-cyan" onclick="phui.toast('System synchronized to cloud payload.', 'success')">
+						<i class="ri-message-3-line"></i> Trigger Toast
+					</button>
+					<button class="ph-button" data-ph-toggle="modal" data-ph-target="demo-modal">
+						<i class="ri-window-line"></i> Initialize Modal
+					</button>
+					<!-- Tooltip Hover -->
+					<span data-tooltip="This is a pure CSS tooltip overlay!" style="color:var(--ph-amber); text-decoration:underline; cursor:help;">
+						Hover for Tooltip
+					</span>
+				</div>
+			</section>
+
+		</main>
+	</div>
+
+	<!-- Modal Dialog (Hidden by default) -->
+	<div id="demo-modal" class="ph-overlay">
+		<div class="ph-modal-content">
+			<button class="ph-modal-close" data-ph-dismiss="modal" aria-label="Close Modal">&times;</button>
+			<h2 class="ph-text-amber ph-mb-4" style="font-family: var(--ph-font-display);">Override Confirmation</h2>
+			<p class="ph-mb-4">You are about to overwrite core files in the root sector. This action is irreversible and may cause the current terminal to go offline. Proceed with the override sequence?</p>
+			
+			<div class="ph-form-field">
+				<label class="ph-form-label">Auth Key:</label>
+				<!-- Focus trap test: this input will automatically gain focus when modal opens -->
+				<input type="password" class="ph-input" placeholder="Enter sudo password...">
+			</div>
+
+			<div class="ph-stack-h" style="justify-content: flex-end; margin-top:20px;">
+				<button class="ph-button ph-btn-ghost" data-ph-dismiss="modal">Abort</button>
+				<button class="ph-button ph-btn-red" onclick="phui.closeModal(document.getElementById('demo-modal')); phui.toast('Override sequence forcefully terminated.', 'error');">Confirm Override</button>
+			</div>
 		</div>
-		</main></div><script src="../phosphor-ui.min.js"></script>
-	</body>
+	</div>
+
+	<!-- Core JS Initialization -->
+	<script src="phosphor-ui.js"></script>
+</body>
 </html>

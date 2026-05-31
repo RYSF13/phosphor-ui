@@ -1,42 +1,38 @@
-# PhosphorUI
+# 📟 PhosphorUI
+**Explore the Retro Futurism. System Online.**
 
-**Explore the retro futurism**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+[![Version](https://img.shields.io/badge/version-1.2.0–MAJOR-red.svg)](#) 
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen.svg)](#)
+[![Vanilla JS](https://img.shields.io/badge/framework-Vanilla_JS-f7df1e.svg)](#)
 
-A lightweight, pragmatic CSS/JS framework with a retro-futuristic aesthetic. PhosphorUI brings the nostalgic charm of CRT monitors, terminal interfaces, and 80s sci-fi design to modern web development.
+A lightweight, pragmatic CSS/JS framework forged in the aesthetic of the 1980s cyberpunk matrix, CRT monitors, and monolithic terminal interfaces. 
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/RYSF13/phosphor-ui)
+PhosphorUI completely rejects modern build-tool bloat. No Node.js. No Webpack. No Virtual DOM. Just pure, brutalist HTML5, CSS3, and Vanilla JavaScript adhering strictly to the **Unix Philosophy**: *Do one thing, and do it well.*
 
-## ✨ Features
+---
 
-- 🎨 **Retro-Futuristic Design** - CRT scanlines, terminal aesthetics, neon accents
-- 🪶 **Lightweight** - Pure CSS + Vanilla JavaScript, no dependencies
-- 📱 **Responsive** - Mobile-first approach with adaptive layouts
-- 🎭 **Rich Components** - Buttons, cards, modals, timelines, tables, forms and more
-- ⚡ **Performance** - Optimized animations with Intersection Observer API
-- 🎯 **Easy to Use** - Simple class-based system, minimal JavaScript required
+## ✨ System Features (v1.2.0 Overhaul)
 
-## 🚀 Quick Start
+- 🎨 **The CRT Aesthetic** - Built-in, non-blocking scanlines, RGB sub-pixel banding, and phosphor flicker.
+- 🪶 **Absolute Lightweight** - Drop in the CSS and JS, and you are live. Zero compile time.
+- 📐 **Smart Grid Architecture** - Utilizing CSS Grid `minmax()` and Flexbox for mathematically perfect, media-query-free responsive degradation.
+- 🛡️ **A11y & Focus Traps** - Geek-friendly keyboard navigation. Modals lock focus securely so your `Tab` key never escapes the terminal.
+- 🔌 **Native Form Hacking** - Dropdown, Date, Color, and File pickers are purely styled native HTML5 tags. No bloated 500-line JS calendar plugins.
 
-### CDN (Recommended)
+## 🚀 Initialization (Quick Start)
 
-```html
-<!-- CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/RYSF13/phosphor-ui@latest/phosphor-ui.min.css">
-
-<!-- JavaScript -->
-<script src="https://cdn.jsdelivr.net/gh/RYSF13/phosphor-ui@latest/phosphor-ui.min.js"></script>
-```
-
-### Download
-
-Download `phosphor-ui.min.css` and `phosphor-ui.min.js` from the [GitHub repository](https://github.com/RYSF13/phosphor-ui) and include them in your project:
+### CDN Payload (Recommended)
 
 ```html
-<link rel="stylesheet" href="path/to/phosphor-ui.min.css">
-<script src="path/to/phosphor-ui.min.js"></script>
+<!-- Inject the Core Stylesheet -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/RYSF13/phosphor-ui@1.2.0/phosphor-ui.css">
+
+<!-- Inject the Core Logic -->
+<script src="https://cdn.jsdelivr.net/gh/RYSF13/phosphor-ui@1.2.0/phosphor-ui.js"></script>
 ```
 
-### Basic Template
+### Basic Terminal Blueprint
 
 ```html
 <!DOCTYPE html>
@@ -44,264 +40,126 @@ Download `phosphor-ui.min.css` and `phosphor-ui.min.js` from the [GitHub reposit
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhosphorUI App</title>
-    <link rel="stylesheet" href="phosphor-ui.min.css">
+    <title>PhosphorUI Terminal</title>
+    <link rel="stylesheet" href="phosphor-ui.css">
 </head>
 <body>
+    <!-- Top Nav -->
     <header class="ph-pageheader">
-        <div class="ph-logo">PHOSPHOR/UI</div>
-        <div class="ph-mobile-toggle">
-            <i class="ri-menu-line"></i>
-        </div>
+        <div class="ph-logo">PHOSPHOR_UI <span class="ph-text-amber">v1.2.0</span></div>
+        <button class="ph-mobile-toggle"><i class="ri-menu-line"></i></button>
     </header>
 
-    <div class="ph-block">
-        <h1 class="ph-heading">Welcome to PhosphorUI</h1>
-        <p>Start building retro-futuristic interfaces.</p>
-        <button class="ph-button ph-btn-cut">Get Started</button>
+    <!-- Main Content -->
+    <div class="ph-splitpagelayout">
+        <main class="ph-main">
+            <div class="ph-block">
+                <h1 class="ph-text-cyan">Welcome to the Matrix</h1>
+                <p>Start building retro-futuristic interfaces.</p>
+                <button class="ph-button">Initialize Protocol</button>
+            </div>
+        </main>
     </div>
 
-    <script src="phosphor-ui.min.js"></script>
+    <script src="phosphor-ui.js"></script>
 </body>
 </html>
 ```
 
-## 📦 Components
+## 📦 Component Syntax
 
-### Buttons
-
-```html
-<!-- Standard Button -->
-<button class="ph-button">Default</button>
-
-<!-- Colored Variants -->
-<button class="ph-button ph-button-amber">Amber</button>
-<button class="ph-button ph-button-cyan">Cyan</button>
-<button class="ph-button ph-button-red">Alert</button>
-
-<!-- Shape Variations -->
-<button class="ph-button ph-btn-cut">Cut Corner</button>
-<button class="ph-button ph-btn-bi-cut">Bi-Cut</button>
-
-<!-- Reversed Style -->
-<button class="ph-button ph-button-reversed-amber">Reversed</button>
-```
-
-### Cards
+### 1. Data Grids & Layouts
+The v1.2.0 grid engine is entirely auto-fitting.
 
 ```html
-<div class="ph-card">
-    <div class="ph-card-img-area">
-        <img src="image.jpg" alt="Card image">
-        <span class="ph-card-img-tag ph-label-amber">NEW</span>
-    </div>
-    <div class="ph-card-body">
-        <div class="ph-sector-tag">Project Alpha</div>
-        <h3 class="ph-card-title">Card Title</h3>
-        <p class="ph-card-desc">Description of the card content goes here.</p>
-        <button class="ph-button ph-btn-cut">Learn More</button>
-    </div>
+<!-- 2-Column Grid (Stacks on mobile automatically) -->
+<div class="ph-grid ph-grid-cols-2">
+    <div class="ph-card">Sector 1</div>
+    <div class="ph-card">Sector 2</div>
 </div>
+
+<!-- Flex Stacks -->
+<div class="ph-stack-v">Vertical Stack</div>
+<div class="ph-stack-h">Horizontal Stack</div>
 ```
 
-### Blocks
+### 2. Native Hardware Forms
+We styled the raw HTML tags to look like a hacking console. 
 
 ```html
-<div class="ph-block bg-amber">
-    <h2 class="ph-heading">Section Heading</h2>
-    <p>Content with retro corner decorations.</p>
-</div>
-```
+<label class="ph-form-label">System Override Code</label>
+<input type="text" class="ph-input is-error" placeholder="Enter bypass...">
 
-### Forms
-
-```html
-<input type="text" class="ph-textinput" placeholder="Enter text">
-<textarea class="ph-textarea" placeholder="Your message"></textarea>
-<select class="ph-select">
-    <option>Option 1</option>
-    <option>Option 2</option>
-</select>
+<!-- Native Date & Color Pickers, styled perfectly -->
+<input type="date" class="ph-input">
+<input type="color" class="ph-input" value="#ffb000">
 
 <!-- Toggle Switch -->
-<label class="ph-toggleswitch">
-    <input type="checkbox">
+<label class="ph-switch">
+    <input type="checkbox" checked>
     <span class="ph-slider"></span>
 </label>
 ```
 
-### Modal
+### 3. Action Buttons & Dropdowns
 
 ```html
-<!-- Trigger -->
-<button class="ph-button" data-ph-toggle="modal" data-ph-target="modal1">
-    Open Modal
+<button class="ph-button">Execute (Default)</button>
+<button class="ph-button ph-btn-cyan">Scan (Cyan)</button>
+<button class="ph-button ph-btn-red">Destroy (Danger)</button>
+<button class="ph-button ph-btn-ghost">Abort (Ghost)</button>
+
+<!-- Action Menu Dropdown -->
+<div class="ph-dropdown-wrapper">
+    <button class="ph-button">More Actions</button>
+    <div class="ph-dropdown-menu">
+        <a class="ph-dropdown-item">Reboot Module</a>
+        <a class="ph-dropdown-item ph-text-red">Self-Destruct</a>
+    </div>
+</div>
+```
+
+### 4. Overlays & Feedback (Toasts/Modals)
+
+```html
+<!-- Modal Trigger -->
+<button class="ph-button" data-ph-toggle="modal" data-ph-target="mainframe-modal">
+    Access Mainframe
 </button>
 
-<!-- Modal Structure -->
-<div class="ph-overlay" id="modal1">
-    <div class="ph-modal-content">
-        <h2 class="ph-heading">Modal Title</h2>
-        <p>Modal content here.</p>
-        <button class="ph-button" data-ph-dismiss="modal">Close</button>
-    </div>
-</div>
+<!-- Trigger Toast via JS -->
+<button class="ph-button" onclick="phui.toast('Access Granted.', 'success')">
+    Ping Server
+</button>
 ```
 
-### Timeline
+## 📝 A Note on Code Highlighting
+PhosphorUI provides a beautiful structural container for code via the `.ph-code-block` class. However, **it does not include a built-in syntax highlighter** (to keep the library lightweight). 
 
-```html
-<div class="ph-timeline">
-    <div class="ph-timeline-item">
-        <h3 class="text-amber">2024.01</h3>
-        <p>Project initiated</p>
-    </div>
-    <div class="ph-timeline-item">
-        <h3 class="text-amber">2024.06</h3>
-        <p>Version 1.0 released</p>
-    </div>
-</div>
-```
+If you are building a dev-blog or documentation site and need syntax highlighting, we highly recommend pairing PhosphorUI with **[highlight.js](https://highlightjs.org/)** or **Prism.js**. Their dark themes (like `monokai` or `a11y-dark`) blend flawlessly with our CRT aesthetic.
 
-### Data Table
-
-```html
-<table class="ph-datatable">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>001</td>
-            <td>Project Alpha</td>
-            <td><span class="ph-label-green">Active</span></td>
-        </tr>
-    </tbody>
-</table>
-```
-
-## 🎨 Color System
-
-PhosphorUI uses a carefully curated retro-futuristic color palette:
+## 🎨 Token Variables (Color System)
+Redefine the DNA of the UI by tweaking the CSS variables in `:root`.
 
 ```css
---ph-amber: #ffb000     /* Primary accent */
---ph-cyan: #00f3f3      /* Secondary accent */
---ph-orange: #ff5f1f    /* Warning */
---ph-red: #ff0055       /* Error/Alert */
---ph-green: #00ff41     /* Success */
---ph-white: #cec5b5     /* Text */
---ph-bg: #141210        /* Background */
+:root {
+    --ph-amber: #ffb000;    /* Warning / Primary Focus */
+    --ph-cyan: #00f3f3;     /* Info / Secondary Focus */
+    --ph-red: #ff0055;      /* Danger / Error */
+    --ph-green: #00ff41;    /* Success / Terminal Green */
+    --ph-bg: #141210;       /* Deep Void Background */
+}
 ```
-
-### Utility Classes
-
-```html
-<!-- Text Colors -->
-<p class="text-amber">Amber text</p>
-<p class="text-cyan">Cyan text</p>
-<p class="text-green">Green text</p>
-
-<!-- Backgrounds -->
-<div class="bg-default">Default background</div>
-<div class="bg-amber">Amber background</div>
-<div class="bg-grid">Grid pattern</div>
-<div class="bg-hatch">Hatch pattern</div>
-```
-
-## 📐 Layout System
-
-### Split Page Layout
-
-```html
-<div class="ph-splitpagelayout">
-    <aside class="ph-sidebar">
-        <!-- Sidebar content -->
-    </aside>
-    <main class="ph-main">
-        <!-- Main content -->
-    </main>
-</div>
-```
-
-### Grid Columns
-
-```html
-<div class="ph-columns ph-col-2">
-    <div>Column 1</div>
-    <div>Column 2</div>
-</div>
-
-<div class="ph-columns ph-col-3">
-    <div>Column 1</div>
-    <div>Column 2</div>
-    <div>Column 3</div>
-</div>
-```
-
-## 🎬 Animations
-
-PhosphorUI includes built-in scroll animations powered by Intersection Observer:
-
-- Automatic fade-in on scroll for `.ph-block`, `.ph-columns`, lists
-- CRT scanline effect overlay
-- Subtle screen flicker animation
-- No configuration needed - works out of the box
-
-## 🔧 JavaScript API
-
-```javascript
-// Open modal programmatically
-PhosphorUI.openModal(document.getElementById('modal1'));
-
-// Close modal
-PhosphorUI.closeModal(document.getElementById('modal1'));
-
-// Toggle switch
-PhosphorUI.toggleSwitch('mySwitch');
-
-// Manual re-initialization (if needed)
-PhosphorUI.init();
-```
-
-## 📱 Responsive Design
-
-PhosphorUI is mobile-first with a breakpoint at `768px`:
-
-- Automatic sidebar collapse on mobile
-- Stack columns to single column
-- Optimized touch targets
-- Responsive tables with horizontal scroll
-
-## 🌟 Typography
-
-Two primary typefaces create the retro-futuristic aesthetic:
-
-- **Space Mono** - Monospace font for body text
-- **Orbitron** - Display font for headings and UI elements
 
 ## 📄 License
-
-MIT License - feel free to use in personal and commercial projects.
+MIT License. Free to use, modify, and distribute. 
 
 ## 👤 Author
-
 **Robert Y. Stanford**  
 GitHub: [@RYSF13](https://github.com/RYSF13)
 
-## 🤝 Contributing
-
-Contributions, issues and feature requests are welcome!  
-Feel free to check the [issues page](https://github.com/RYSF13/phosphor-ui/issues).
-
-## ⭐ Show Your Support
-
-Give a ⭐️ if this project helped you!
+> *"We build our computers the way we build our cities—over time, without a plan, on top of ruins."* 
 
 ---
-
-**Built with nostalgia for the future** 🚀✨
+**PhosphorUI // Explore the retro futurism** 🚀
+```

@@ -1,164 +1,185 @@
 /*
- * PhosphorUI - Explore the retro futuism
- * v1.1.1
+ * PhosphorUI - Explore the retro futurism
+ * v1.2.0
  * Concept: Light, Pragmatic, Retro-Future
- * Author: Robert Y. Stanford(gh@RYSF13)
+ * Author: Robert Y. Stanford (gh@RYSF13)
  * License: MIT
  */
 
 (function(global) {
-	var PhosphorUI = {
-		// Initialization entry point
+	'use strict';
+
+	const PhosphorUI = {
+		// Boot sequence
 		init: function() {
-			this.initAnimations();
 			this.initSidebar();
-			this.initDismissibles();
-			this.initTabs();
+			this.initDropdowns();
 			this.initModals();
-			console.log("[PhosphorUI] System Online");
+			this.initFileInputs();
+			this.setupToastContainer();
+			console.log("[PhosphorUI v1.2.0] System Online. Awaiting inputs...");
 		},
 
-		initAnimations: function() {
-			const observerOptions = {
-				threshold: 0.05, // Lower threshold to trigger sooner
-				rootMargin: "0px 0px 100px 0px" // Pre-load elements 100px before they appear
-			};
-
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting) {
-						entry.target.classList.add('visible');
-						observer.unobserve(entry.target); // Animate only once
-					}
-				});
-			}, observerOptions);
-
-			// Target core structural elements
-			const targets = document.querySelectorAll('.ph-block, .ph-columns, .ph-banner, .ph-datatable, .ph-timeline-item, li');
-			targets.forEach(el => {
-				el.classList.add('ph-animate-scroll');
-				observer.observe(el);
-			});
-
-			// Navbar fades in separately
-			const header = document.querySelector('.ph-pageheader');
-			if (header) {
-				header.classList.add('ph-animate-fade');
-				// Small delay to ensure CSS is ready
-				setTimeout(() => header.classList.add('visible'), 100);
-			}
-		},
-
-		// Mobile Sidebar Interaction
+		// Mobile Navigation Toggle
 		initSidebar: function() {
 			const toggle = document.querySelector('.ph-mobile-toggle');
 			const sidebar = document.querySelector('.ph-sidebar');
 
 			if (toggle && sidebar) {
 				toggle.addEventListener('click', (e) => {
-					e.stopPropagation(); // Prevent immediate close
+					e.stopPropagation();
 					sidebar.classList.toggle('active');
-
-					// Toggle Icon
 					const icon = toggle.querySelector('i');
-					if (sidebar.classList.contains('active')) {
-						icon.classList.replace('ri-menu-line', 'ri-close-fill');
-					} else {
-						icon.classList.replace('ri-close-fill', 'ri-menu-line');
+					if(icon) {
+						icon.classList.toggle('ri-menu-line');
+						icon.classList.toggle('ri-close-fill');
 					}
 				});
 
-				// Close sidebar when clicking outside on mobile
+				// Click outside to close drawer
 				document.addEventListener('click', (e) => {
-					if (window.innerWidth < 768 &&
-						sidebar.classList.contains('active') &&
-						!sidebar.contains(e.target) &&
-						e.target !== toggle) {
+					if (window.innerWidth <= 768 && sidebar.classList.contains('active') && !sidebar.contains(e.target) && e.target !== toggle) {
 						sidebar.classList.remove('active');
 						const icon = toggle.querySelector('i');
-						icon.classList.replace('ri-close-fill', 'ri-menu-line');
+						if(icon) {
+							icon.classList.replace('ri-close-fill', 'ri-menu-line');
+						}
 					}
 				});
 			}
 		},
 
-		// Dismissible elements (e.g., Banners)
-		initDismissibles: function() {
-			document.querySelectorAll('.ph-banner-close').forEach(btn => {
-				btn.addEventListener('click', function() {
-					const banner = this.closest('.ph-banner');
-					if (banner) banner.style.display = 'none';
-				});
-			});
-		},
-
-		// Tab / Segmented Control Logic
-		initTabs: function() {
-			document.querySelectorAll('.ph-segmentedcontrol').forEach(control => {
-				const btns = control.querySelectorAll('.ph-segment-btn');
-				btns.forEach(btn => {
-					btn.addEventListener('click', function() {
-						btns.forEach(b => b.classList.remove('active'));
-						this.classList.add('active');
+		// Dropdown magic. Because native selects are boring sometimes.
+		initDropdowns: function() {
+			document.querySelectorAll('.ph-dropdown-wrapper .ph-button').forEach(btn => {
+				btn.addEventListener('click', function(e) {
+					e.stopPropagation();
+					const wrapper = this.parentElement;
+					// Close others
+					document.querySelectorAll('.ph-dropdown-wrapper.active').forEach(d => {
+						if(d !== wrapper) d.classList.remove('active');
 					});
+					wrapper.classList.toggle('active');
 				});
+			});
+
+			document.addEventListener('click', () => {
+				document.querySelectorAll('.ph-dropdown-wrapper').forEach(d => d.classList.remove('active'));
 			});
 		},
 
-		// Modal / Overlay Logic
+		// Modal overlay with Focus Trap mechanism
 		initModals: function() {
-			// Open Triggers
 			document.querySelectorAll('[data-ph-toggle="modal"]').forEach(trigger => {
 				trigger.addEventListener('click', function() {
 					const targetId = this.getAttribute('data-ph-target');
 					const modal = document.getElementById(targetId);
-					if (modal) Phosphor.openModal(modal);
+					if (modal) PhosphorUI.openModal(modal);
 				});
 			});
 
-			// Close logic
 			document.querySelectorAll('.ph-overlay').forEach(overlay => {
 				overlay.addEventListener('click', function(e) {
-					if (e.target === this) Phosphor.closeModal(this);
+					// Close only if clicked exactly on the backdrop
+					if (e.target === this) PhosphorUI.closeModal(this);
 				});
 			});
 
 			document.querySelectorAll('[data-ph-dismiss="modal"]').forEach(btn => {
 				btn.addEventListener('click', function() {
 					const modal = this.closest('.ph-overlay');
-					Phosphor.closeModal(modal);
+					PhosphorUI.closeModal(modal);
+				});
+			});
+
+			// Escape key listener for the hacker inside you
+			document.addEventListener('keydown', (e) => {
+				if(e.key === 'Escape') {
+					const activeModal = document.querySelector('.ph-overlay.active');
+					if(activeModal) PhosphorUI.closeModal(activeModal);
+				}
+			});
+		},
+
+		openModal: function(modalElement) {
+			modalElement.classList.add('active');
+			document.body.style.overflow = 'hidden'; // Lock background scroll
+			
+			// The notorious focus trap. Keep your keyboard users happy.
+			const focusableElements = modalElement.querySelectorAll('a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select');
+			if(focusableElements.length > 0) {
+				focusableElements[0].focus();
+			}
+		},
+
+		closeModal: function(modalElement) {
+			modalElement.classList.remove('active');
+			document.body.style.overflow = '';
+		},
+
+		// Sync native file input name to UI
+		initFileInputs: function() {
+			document.querySelectorAll('input[type="file"].ph-input').forEach(input => {
+				input.addEventListener('change', function(e) {
+					const fileName = e.target.files[0] ? e.target.files[0].name : "NO_FILE_SELECTED";
+					this.setAttribute('data-tooltip', fileName);
 				});
 			});
 		},
 
-		// Open Modal
-		openModal: function(modalElement) {
-			if (modalElement) {
-				modalElement.classList.add('active');
-				document.body.style.overflow = 'hidden'; // Lock background scroll
+		// --- Dynamic Utilities ---
+
+		// Toast Notification System
+		setupToastContainer: function() {
+			if (!document.getElementById('ph-toast-container')) {
+				const container = document.createElement('div');
+				container.id = 'ph-toast-container';
+				document.body.appendChild(container);
 			}
 		},
 
-		// Close Modal
-		closeModal: function(modalElement) {
-			if (modalElement) {
-				modalElement.classList.remove('active');
-				document.body.style.overflow = ''; // Restore background scroll
-			}
-		},
+		toast: function(message, type = 'info', duration = 3000) {
+			const container = document.getElementById('ph-toast-container');
+			if(!container) return;
 
-		// Toggle Switch Programmatically
-		toggleSwitch: function(switchId) {
-			const el = document.getElementById(switchId);
-			if (el) el.checked = !el.checked;
+			const toast = document.createElement('div');
+			toast.className = 'ph-toast';
+			
+			// Color mapping
+			let color = 'var(--ph-cyan)';
+			if(type === 'error') color = 'var(--ph-red)';
+			if(type === 'warn' || type === 'warning') color = 'var(--ph-amber)';
+			if(type === 'success') color = 'var(--ph-green)';
+			
+			toast.style.borderColor = color;
+			toast.innerHTML = `<span style="color:${color}; font-weight:bold;">[${type.toUpperCase()}]</span> <span style="margin-left:10px;">${message}</span>`;
+			
+			container.appendChild(toast);
+
+			// Self-destruct sequence
+			setTimeout(() => {
+				toast.style.opacity = '0';
+				toast.style.transform = 'translateX(100%)';
+				toast.style.transition = 'all 0.3s';
+				setTimeout(() => toast.remove(), 300);
+			}, duration);
 		}
 	};
 
-	window.phui = window.PhosphorUI = PhosphorUI;
+	global.phui = global.PhosphorUI = PhosphorUI;
 
-})(typeof window !== "undefined" ? window : this)
+})(typeof window !== "undefined" ? window : this);
 
-// Initialize on DOM Ready
+// Fire on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
 	PhosphorUI.init();
 });
+
+/*
+	    ____  __                     __               __  ______
+	   / __ \/ /_  ____  _________  / /_  ____  _____/ / / /  _/
+	  / /_/ / __ \/ __ \/ ___/ __ \/ __ \/ __ \/ ___/ / / // /  
+	 / ____/ / / / /_/ (__  ) /_/ / / / / /_/ / /  / /_/ // /   
+	/_/   /_/ /_/\____/____/ .___/_/ /_/\____/_/   \____/___/   
+	                      /_/                 Robert Y. Stanford
+*/

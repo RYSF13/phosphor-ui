@@ -1,29 +1,25 @@
 /*
  * PhosphorUI - Explore the retro futurism
- * v1.1.1
+ * v1.2.0
  * Concept: Light, Pragmatic, Retro-Future
  * Author: Robert Y. Stanford (gh@RYSF13)
  * License: MIT
- * Note: THIS IS v1.1.1, NOT 1.1.1.1! :)
+ * 
+ * "We build our computers the way we build our cities-over time,
+ * without a plan, on top of ruins." 
+ * Built for standard browsers. No build steps required.
  */
 
-/* ============================================================
-   1. FONTS
-   Import monospaced body font (Space Mono), display/heading
-   font (Orbitron), and the Remix Icon icon font.
-   ============================================================ */
 @import url("./fonts/space_mono.css");
 @import url("./fonts/orbitron.css");
 @import url("https://cdn.jsdelivr.net/npm/remixicon@latest/fonts/remixicon.css");
 
 /* ============================================================
-   2. CSS CUSTOM PROPERTIES (DESIGN TOKENS)
-   Central color palette, font stacks, surface tones, and
-   layout dimensions. All components reference these for
-   easy theming — change a value here and it propagates
-   everywhere.
+   1. TOKENS & SYSTEM VARIABLES
+   The DNA of our UI. Tweak these to change the entire matrix.
    ============================================================ */
 :root {
+	/* Palette */
 	--ph-amber: #ffb000;
 	--ph-cyan: #00f3f3;
 	--ph-orange: #ff5f1f;
@@ -34,22 +30,32 @@
 	--ph-surface-1: #1f1c1a;
 	--ph-surface-2: #0a0908;
 	--ph-surface-3: #3d3834;
+	
+	/* Typography */
 	--ph-font-mono: 'Space Mono', Consolas, Menlo, 'Courier New', monospace;
 	--ph-font-display: 'Orbitron', sans-serif;
-
-	/* Layout dimensions — used across header, sidebar, and main */
+	
+	/* Geometry & Layout */
 	--ph-sidebar-width: 260px;
 	--ph-header-height: 60px;
+	--ph-radius-sm: 2px; /* Brutalist sharp edges, mostly */
+	
+	/* Z-Index Architecture */
+	--ph-z-base: 1;
+	--ph-z-dropdown: 100;
+	--ph-z-sticky: 200;
+	--ph-z-drawer: 300;
+	--ph-z-modal: 400;
+	--ph-z-toast: 500;
+	--ph-z-tooltip: 600;
+	--ph-z-crt: 9999;
 }
 
 /* ============================================================
-   3. GLOBAL RESET
-   Universal border-box model and zero-out default margin
-   and padding on all elements including pseudo-elements.
+   2. GLOBAL RESET & BASE
+   Strip the browser defaults naked.
    ============================================================ */
-*,
-*::before,
-*::after {
+*, *::before, *::after {
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
@@ -58,1673 +64,344 @@
 html {
 	overflow-x: hidden;
 	scroll-behavior: smooth;
-	/* Prevent automatic font size inflation on orientation
-	   change in mobile browsers */
 	-webkit-text-size-adjust: 100%;
-	-moz-text-size-adjust: 100%;
 	text-size-adjust: 100%;
 }
 
-/* ============================================================
-   4. BODY BASE STYLES
-   Dark background, monospaced font, and baseline typography
-   for the entire page.
-   ============================================================ */
 body {
 	background-color: var(--ph-bg);
 	color: var(--ph-white);
 	font-family: var(--ph-font-mono);
 	font-size: 15px;
 	line-height: 1.6;
-	overflow-x: hidden;
 	min-height: 100vh;
+	/* Sub-pixel rendering for that crisp terminal look */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================================================
-   5. CRT SCANLINE & FLICKER OVERLAY
-   Two fixed pseudo-elements simulate a phosphor CRT monitor:
-   - ::before renders scanlines (horizontal) and subtle RGB
-     sub-pixel banding (vertical)
-   - ::after adds a very faint random-feeling flicker
-   Both use pointer-events:none so they never interfere with
-   user interaction.
-   ============================================================ */
+/* Hacker-style text selection */
+::selection { background: var(--ph-cyan); color: var(--ph-bg); }
+::-moz-selection { background: var(--ph-cyan); color: var(--ph-bg); }
 
-/* Scanline grid + RGB sub-pixel emulation */
+/* Custom scrollbars (Webkit only, fallback to standard gracefully) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--ph-surface-2); border-left: 1px solid var(--ph-surface-3); }
+::-webkit-scrollbar-thumb { background: var(--ph-surface-3); }
+::-webkit-scrollbar-thumb:hover { background: var(--ph-amber); }
+
+/* ============================================================
+   3. THE CRT OVERLAY
+   Scanlines and phosphor glow. Completely non-blocking.
+   ============================================================ */
 body::before {
 	content: " ";
 	display: block;
 	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
+	inset: 0;
 	background:
 		linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
 		linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-	z-index: 9999;
+	z-index: var(--ph-z-crt);
 	background-size: 100% 2px, 3px 100%;
 	pointer-events: none;
 }
 
-/* Flicker overlay — very subtle opacity pulse */
 body::after {
 	content: " ";
 	display: block;
 	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
+	inset: 0;
 	background: rgba(18, 16, 16, 0.1);
 	opacity: 0;
-	z-index: 9999;
+	z-index: var(--ph-z-crt);
 	pointer-events: none;
-	-webkit-animation: ph-flicker 0.15s infinite;
 	animation: ph-flicker 0.15s infinite;
 }
 
-/* Flicker keyframes */
-@-webkit-keyframes ph-flicker {
-	0%   { opacity: 0.02; }
-	50%  { opacity: 0.05; }
-	100% { opacity: 0.02; }
-}
 @keyframes ph-flicker {
-	0%   { opacity: 0.02; }
-	50%  { opacity: 0.05; }
-	100% { opacity: 0.02; }
+	0% { opacity: 0.02; } 50% { opacity: 0.05; } 100% { opacity: 0.02; }
 }
 
 /* ============================================================
-   6. SCROLL-REVEAL & FADE ANIMATIONS
-   Used with JavaScript (IntersectionObserver): elements
-   start hidden/offset, then transition to visible when the
-   .visible class is added as they enter the viewport.
+   4. LAYOUT & GRIDS (Box, Stack, Grid, Split, Page)
    ============================================================ */
+.ph-splitpagelayout { display: flex; min-height: 100vh; padding-top: var(--ph-header-height); position: relative; }
+.ph-main { flex-grow: 1; padding: 30px; width: 100%; min-width: 0; margin-left: var(--ph-sidebar-width); }
 
-/* Slide-up reveal */
-.ph-animate-scroll {
-	opacity: 0;
-	-webkit-transform: translateY(20px);
-	transform: translateY(20px);
-	-webkit-transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-	transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-}
+/* The Grid (Responsive standard CSS grid) */
+.ph-grid { display: grid; gap: 20px; width: 100%; }
+.ph-grid-cols-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.ph-grid-cols-3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); }
 
-.ph-animate-scroll.visible {
-	opacity: 1;
-	-webkit-transform: translateY(0);
-	transform: translateY(0);
-}
+/* Stack / Flex helpers */
+.ph-stack-v { display: flex; flex-direction: column; gap: 15px; }
+.ph-stack-h { display: flex; flex-direction: row; align-items: center; gap: 15px; flex-wrap: wrap; }
 
-/* Simple fade-in */
-.ph-animate-fade {
-	opacity: 0;
-	-webkit-transition: opacity 0.8s ease-in;
-	transition: opacity 0.8s ease-in;
-}
-
-.ph-animate-fade.visible {
-	opacity: 1;
-}
-
-/* ============================================================
-   7. UTILITY CLASSES — COLORS
-   Quick override helpers for text and background colors.
-   Use !important so they win over component defaults.
-   ============================================================ */
-
-/* --- Text colors --- */
-.text-amber   { color: var(--ph-amber)  !important; }
-.text-orange  { color: var(--ph-orange) !important; }
-.text-cyan    { color: var(--ph-cyan)   !important; }
-.text-red     { color: var(--ph-red)    !important; }
-.text-green   { color: var(--ph-green)  !important; }
-.text-default { color: var(--ph-white)  !important; }
-
-/* --- Surface / background colors --- */
-.bg-default {
-	background-color: var(--ph-surface-1);
-	border: 1px solid var(--ph-surface-3);
-}
-
-.bg-amber {
-	background-color: rgba(255, 176, 0, 0.15);
-	border-color: var(--ph-amber);
-}
-
-.bg-cyan {
-	background-color: rgba(0, 163, 163, 0.15);
-	border-color: var(--ph-cyan);
-}
-
-.bg-red {
-	background-color: rgba(255, 0, 85, 0.15);
-	border-color: var(--ph-red);
-}
-
-/* --- Decorative background patterns --- */
-
-/* Small square grid overlay */
-.bg-grid {
-	background-image:
-		linear-gradient(var(--ph-surface-3) 1px, transparent 1px),
-		linear-gradient(90deg, var(--ph-surface-3) 1px, transparent 1px);
-	background-size: 20px 20px;
-}
-
-/* 45-degree diagonal hatch — neutral */
-.bg-hatch {
-	background: repeating-linear-gradient(
-		45deg,
-		rgba(255, 255, 255, 0.03),
-		rgba(255, 255, 255, 0.03) 10px,
-		transparent 10px,
-		transparent 20px
-	);
-}
-
-/* 45-degree diagonal hatch — amber tinted */
-.bg-hatch-amber {
-	background: repeating-linear-gradient(
-		45deg,
-		rgba(255, 176, 0, 0.1),
-		rgba(255, 176, 0, 0.1) 10px,
-		transparent 10px,
-		transparent 20px
-	);
-}
-
-/* ============================================================
-   8. UTILITY CLASSES — SPACING
-   Margin and padding helpers. Naming: direction + size
-   where 2 = 0.5rem, 4 = 1rem, 6 = 1.5rem, 8 = 2rem.
-   ============================================================ */
-.m-0  { margin: 0 !important; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-4 { margin-bottom: 1rem; }
-.mb-6 { margin-bottom: 1.5rem; }
-.mb-8 { margin-bottom: 2rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-8 { margin-top: 2rem; }
-.mr-2 { margin-right: 0.5rem; }
-.ml-4 { margin-left: 1rem; }
-.p-2  { padding: 0.5rem; }
-.p-4  { padding: 1rem; }
-
-/* ============================================================
-   9. UTILITY CLASSES — FLEXBOX LAYOUT
-   Common flex container and alignment shorthands. Includes
-   -webkit- prefixes for older Safari / iOS WebView.
-   ============================================================ */
-.flex            { display: -webkit-flex; display: flex; }
-.flex-col        { -webkit-flex-direction: column; flex-direction: column; }
-.flex-wrap       { -webkit-flex-wrap: wrap; flex-wrap: wrap; }
-.items-center    { -webkit-align-items: center; align-items: center; }
-.justify-between { -webkit-justify-content: space-between; justify-content: space-between; }
-.justify-end     { -webkit-justify-content: flex-end; justify-content: flex-end; }
-.justify-center  { -webkit-justify-content: center; justify-content: center; }
-.gap-2           { gap: 0.5rem; }
-.gap-4           { gap: 1rem; }
-
-/* ============================================================
-   10. UTILITY CLASSES — SIZING & TYPOGRAPHY
-   Width constraints, text alignment, font sizes, and
-   miscellaneous text utilities.
-   ============================================================ */
-.w-full      { width: 100%; }
-.mw-800      { max-width: 800px; }
-.text-center { text-align: center; }
-.text-right  { text-align: right; }
-
-.text-lg  { font-size: 1.25rem; }
-.text-xl  { font-size: 1.5rem; }
-.text-xxl { font-size: 2rem; line-height: 1.1; }
-.text-sm  { font-size: 0.85rem; }
-
-.font-bold { font-weight: 700; }
-.uppercase { text-transform: uppercase; }
-.lh-2      { line-height: 2; }
-
-/* ============================================================
-   11. UTILITY CLASSES — DISPLAY
-   Simple show/hide helpers.
-   ============================================================ */
-.hidden { display: none !important; }
-.block  { display: block; }
-
-/* ============================================================
-   12. BASE ELEMENT — ANCHOR
-   Strip browser default link styling globally. Individual
-   components (ph-link, etc.) restyle as needed.
-   ============================================================ */
-a {
-	color: inherit;
-	text-decoration: none;
-}
-
-/* ============================================================
-   13. SPLIT-PAGE LAYOUT (SIDEBAR + MAIN CONTENT)
-   The primary structural container: a fixed sidebar on the
-   left for navigation, and a scrollable main content area
-   on the right. The fixed page header sits above everything,
-   so the layout is offset by --ph-header-height.
-   ============================================================ */
-.ph-splitpagelayout {
-	display: -webkit-flex;
-	display: flex;
-	min-height: 100vh;
-	padding-top: var(--ph-header-height);
-	position: relative;
-}
-
-/* --- Fixed sidebar navigation panel --- */
-.ph-sidebar {
-	width: var(--ph-sidebar-width);
-	background: var(--ph-surface-2);
-	border-right: 2px solid var(--ph-surface-3);
-	padding: 20px;
-	z-index: 90;
-	position: fixed;
-	top: var(--ph-header-height);
-	left: 0;
-	bottom: 0;
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
-	-webkit-transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-	transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* --- Scrollable main content area --- */
-.ph-main {
-	-webkit-flex-grow: 1;
-	flex-grow: 1;
-	padding: 30px;
-	width: 100%;
-	min-width: 0;
-	margin-left: var(--ph-sidebar-width);
-}
-
-/* ============================================================
-   14. BUTTON SYSTEM
-   Hollow double-border button using two pseudo-elements:
-   - ::before = outer fill (acts as the visible border)
-   - ::after  = inner fill (set to bg color = hollow look)
-   On hover, ::after matches ::before creating a solid fill.
-   Drop-shadow creates the retro offset shadow.
-   ============================================================ */
-.ph-button {
-	position: relative;
-	display: -webkit-inline-flex;
-	display: inline-flex;
-	-webkit-align-items: center;
-	align-items: center;
-	-webkit-justify-content: center;
-	justify-content: center;
-	padding: 12px 24px;
-	font-family: var(--ph-font-mono);
-	font-weight: 700;
-	text-transform: uppercase;
-	cursor: pointer;
-	background: transparent;
-	border: none;
-	color: var(--ph-white);
-	z-index: 1;
-	margin-right: 10px;
-	margin-bottom: 6px;
-	-webkit-transition: transform 0.1s;
-	transition: transform 0.1s;
-	-webkit-filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.8));
-	filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.8));
-	line-height: 1.2;
-	white-space: nowrap;
-	-webkit-tap-highlight-color: transparent;
-	touch-action: manipulation;
-}
-
-/* Outer border layer */
-.ph-button::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: var(--ph-white);
-	z-index: -2;
-	-webkit-transition: background 0.2s;
-	transition: background 0.2s;
-}
-
-/* Inner fill layer — creates the hollow appearance */
-.ph-button::after {
-	content: "";
-	position: absolute;
-	top: 2px;
-	left: 2px;
-	right: 2px;
-	bottom: 2px;
-	background: var(--ph-bg);
-	z-index: -1;
-	-webkit-transition: background 0.2s;
-	transition: background 0.2s;
-}
-
-/* Hover: fill inner to match outer = solid button */
-.ph-button:hover {
-	color: var(--ph-bg);
-}
-.ph-button:hover::before {
-	background: var(--ph-amber);
-}
-.ph-button:hover::after {
-	background: var(--ph-amber);
-}
-
-/* Active: depress effect via translate + reduced shadow */
-.ph-button:active {
-	-webkit-transform: translate(2px, 2px);
-	transform: translate(2px, 2px);
-	-webkit-filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.8));
-	filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.8));
-}
-
-/* --- Color variants (change outer border color) --- */
-.ph-button-amber        { color: var(--ph-amber); }
-.ph-button-amber::before { background: var(--ph-amber); }
-
-.ph-button-cyan        { color: var(--ph-cyan); }
-.ph-button-cyan::before { background: var(--ph-cyan); }
-
-.ph-button-red        { color: var(--ph-red); }
-.ph-button-red::before { background: var(--ph-red); }
-
-/* --- Reversed (filled) variant — amber --- */
-.ph-button-reversed-amber        { color: var(--ph-bg); }
-.ph-button-reversed-amber::before { background: var(--ph-amber); }
-.ph-button-reversed-amber::after  { background: var(--ph-amber); }
-.ph-button-reversed-amber:hover   { color: var(--ph-white); }
-.ph-button-reversed-amber:hover::after { background: var(--ph-surface-1); }
-
-/* ============================================================
-   15. BUTTON SHAPE MODIFIERS
-   clip-path variants for angular / sci-fi button silhouettes.
-   Must be applied to the element AND both pseudo-elements
-   so the clipping is consistent.
-   ============================================================ */
-
-/* Square — explicitly remove any inherited clip-path */
-.ph-btn-square {
-	-webkit-clip-path: none;
-	clip-path: none;
-}
-
-/* Single corner cut (bottom-right) */
-.ph-btn-cut,
-.ph-btn-cut::before,
-.ph-btn-cut::after {
-	-webkit-clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
-	clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
-}
-
-/* Dual corner cut (top-left + bottom-right) */
-.ph-btn-bi-cut,
-.ph-btn-bi-cut::before,
-.ph-btn-bi-cut::after {
-	-webkit-clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-	clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-}
-
-/* ============================================================
-   16. BREADCRUMBS
-   Inline navigation trail. Each <span> is a path segment;
-   the last span represents the current page (dimmed).
-   ============================================================ */
-.ph-breadcrumbs span {
-	margin: 0.5em;
-	color: var(--ph-amber);
-}
-
-.ph-breadcrumbs span:last-child {
-	color: var(--ph-white);
-}
-
-.ph-breadcrumbs-cyan span {
-	margin: 0.5em;
-	color: var(--ph-cyan);
-}
-
-.ph-breadcrumbs-cyan span:last-child {
-	color: var(--ph-white);
-}
-
-/* ============================================================
-   17. COLUMN GRID SYSTEM
-   Simple CSS Grid based column layouts. Collapses gracefully
-   at smaller breakpoints (see responsive section below).
-   ============================================================ */
-.ph-columns {
-	display: grid;
-	gap: 20px;
-	width: 100%;
-	margin-bottom: 20px;
-}
-
-/* Two equal columns */
-.ph-col-2 {
-	grid-template-columns: repeat(2, 1fr);
-}
-
-/* Three equal columns */
-.ph-col-3 {
-	grid-template-columns: repeat(3, 1fr);
-}
-
-/* ============================================================
-   18. PAGE HEADER (FIXED TOP BAR)
-   Always-visible bar at the very top of the viewport.
-   Contains the logo/title on the left and navigation or
-   action items on the right.
-   ============================================================ */
-.ph-pageheader {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: var(--ph-header-height);
-	background: var(--ph-surface-2);
-	border-bottom: 2px solid var(--ph-amber);
-	display: -webkit-flex;
-	display: flex;
-	-webkit-align-items: center;
-	align-items: center;
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
-	padding: 0 20px;
-	z-index: 100;
-	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Site logo / brand name */
-.ph-logo {
-	font-family: var(--ph-font-display);
-	font-size: 1.05rem;
-	letter-spacing: 2px;
-	color: var(--ph-white);
-	white-space: nowrap;
-}
-
-/* Hamburger / mobile menu toggle — hidden on desktop */
-.ph-mobile-toggle {
-	display: none;
-	font-size: 1.5rem;
-	cursor: pointer;
-	color: var(--ph-amber);
-	-webkit-tap-highlight-color: transparent;
-	touch-action: manipulation;
-	background: none;
-	border: none;
-	padding: 8px;
-}
-
-/* ============================================================
-   19. CONTENT BLOCK
-   General-purpose bordered container with decorative corner
-   brackets rendered via ::before (top-left) and ::after
-   (bottom-right) pseudo-elements.
-   ============================================================ */
+/* The Box / Block */
 .ph-block {
 	position: relative;
 	border: 2px solid var(--ph-surface-3);
 	background: var(--ph-surface-1);
 	padding: 20px;
-	margin-bottom: 20px;
 	box-shadow: 6px 6px 0px #000;
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	max-width: 100%;
 }
-
-/* Corner bracket decorations */
-.ph-block::before,
-.ph-block::after {
-	content: "";
-	position: absolute;
-	width: 10px;
-	height: 10px;
-	border: 2px solid var(--ph-white);
-	pointer-events: none;
+/* Cyberpunk corner brackets */
+.ph-block::before, .ph-block::after {
+	content: ""; position: absolute; width: 10px; height: 10px; border: 2px solid var(--ph-white); pointer-events: none;
 }
-
-/* Top-left bracket */
-.ph-block::before {
-	top: -2px;
-	left: -2px;
-	border-bottom: none;
-	border-right: none;
-}
-
-/* Bottom-right bracket */
-.ph-block::after {
-	bottom: -2px;
-	right: -2px;
-	border-top: none;
-	border-left: none;
-}
+.ph-block::before { top: -2px; left: -2px; border-bottom: none; border-right: none; }
+.ph-block::after { bottom: -2px; right: -2px; border-top: none; border-left: none; }
 
 /* ============================================================
-   20. HEADING
-   Section heading using the display font with a colored
-   left-border accent strip.
+   5. NAVIGATION (Sidebar, Breadcrumbs, Tabs, Pagination)
    ============================================================ */
-.ph-heading {
-	font-family: var(--ph-font-display);
-	text-transform: uppercase;
-	margin-bottom: 1rem;
-	border-left: 4px solid var(--ph-amber);
-	padding-left: 12px;
-	color: var(--ph-white);
-	letter-spacing: 1px;
-	overflow-wrap: break-word;
-	word-break: break-word;
+/* Header & Sidebar */
+.ph-pageheader {
+	position: fixed; top: 0; left: 0; right: 0; height: var(--ph-header-height);
+	background: var(--ph-surface-2); border-bottom: 2px solid var(--ph-amber);
+	display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
+	z-index: var(--ph-z-sticky); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
+.ph-logo { font-family: var(--ph-font-display); font-size: 1.05rem; letter-spacing: 2px; color: var(--ph-white); }
+.ph-sidebar {
+	width: var(--ph-sidebar-width); background: var(--ph-surface-2); border-right: 2px solid var(--ph-surface-3);
+	padding: 20px; z-index: var(--ph-z-drawer); position: fixed; top: var(--ph-header-height); left: 0; bottom: 0;
+	overflow-y: auto; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Nav Menu / File Tree / Lists */
+.ph-nav-menu, .ph-file-tree { list-style: none; }
+.ph-nav-menu li a, .ph-file-tree li {
+	display: block; padding: 8px 12px; color: var(--ph-white); text-decoration: none;
+	border-left: 2px solid transparent; transition: all 0.2s; cursor: pointer;
+}
+.ph-nav-menu li a:hover, .ph-nav-menu li a.active {
+	background: rgba(255, 176, 0, 0.1); border-left-color: var(--ph-amber); color: var(--ph-amber);
+}
+.ph-file-tree ul { margin-left: 20px; border-left: 1px dashed var(--ph-surface-3); padding-left: 10px; }
+
+/* Breadcrumbs */
+.ph-breadcrumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+.ph-breadcrumbs span { color: var(--ph-amber); }
+.ph-breadcrumbs span:last-child { color: var(--ph-white); pointer-events: none; }
+.ph-breadcrumbs span:not(:last-child)::after { content: "/"; margin-left: 8px; color: var(--ph-surface-3); }
+
+/* Pagination & Stepper */
+.ph-pagination { display: flex; gap: 5px; }
+.ph-pagination .ph-button { padding: 6px 12px; margin: 0; }
+.ph-pagination .active::before { background: var(--ph-amber); }
+.ph-pagination .active::after { background: var(--ph-amber); }
+.ph-pagination .active { color: var(--ph-bg); }
+
+.ph-stepper { display: flex; justify-content: space-between; align-items: center; position: relative; }
+.ph-stepper::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: var(--ph-surface-3); z-index: 0; }
+.ph-step { background: var(--ph-bg); border: 2px solid var(--ph-surface-3); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1; font-weight: bold; }
+.ph-step.active { border-color: var(--ph-amber); color: var(--ph-amber); box-shadow: 0 0 10px rgba(255,176,0,0.5); }
+.ph-step.completed { background: var(--ph-cyan); border-color: var(--ph-cyan); color: var(--ph-bg); }
 
 /* ============================================================
-   21. INLINE HIGHLIGHT MARKS
-   Colored background spans for emphasizing key terms
-   within body text.
+   6. ACTIONS & BUTTONS (Variations, Groups, Dropdowns)
    ============================================================ */
-.highlight-amber {
-	background: var(--ph-amber);
-	color: var(--ph-bg);
-	padding: 0 6px;
-	font-weight: bold;
+.ph-button {
+	position: relative; display: inline-flex; align-items: center; justify-content: center;
+	padding: 10px 20px; font-family: var(--ph-font-mono); font-weight: 700; text-transform: uppercase;
+	cursor: pointer; background: transparent; border: none; color: var(--ph-white); z-index: 1;
+	transition: transform 0.1s; filter: drop-shadow(4px 4px 0px rgba(0, 0, 0, 0.8)); white-space: nowrap; gap: 8px;
 }
+.ph-button::before, .ph-button::after { content: ""; position: absolute; inset: 0; transition: background 0.2s; }
+.ph-button::before { background: var(--ph-white); z-index: -2; }
+.ph-button::after { inset: 2px; background: var(--ph-bg); z-index: -1; }
+.ph-button:hover { color: var(--ph-bg); }
+.ph-button:hover::before, .ph-button:hover::after { background: var(--ph-amber); }
+.ph-button:active { transform: translate(2px, 2px); filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.8)); }
 
-.highlight-cyan {
-	background: var(--ph-cyan);
-	color: var(--ph-bg);
-	padding: 0 6px;
-	font-weight: bold;
+/* Variants */
+.ph-btn-cyan { color: var(--ph-cyan); } .ph-btn-cyan::before { background: var(--ph-cyan); } .ph-btn-cyan:hover::before, .ph-btn-cyan:hover::after { background: var(--ph-cyan); }
+.ph-btn-red { color: var(--ph-red); } .ph-btn-red::before { background: var(--ph-red); } .ph-btn-red:hover::before, .ph-btn-red:hover::after { background: var(--ph-red); }
+.ph-btn-ghost { filter: none; padding: 10px; } .ph-btn-ghost::before { display: none; } .ph-btn-ghost::after { display: none; } .ph-btn-ghost:hover { color: var(--ph-amber); background: rgba(255,176,0,0.1); }
+
+/* Dropdown Button Wrapper */
+.ph-dropdown-wrapper { position: relative; display: inline-block; }
+.ph-dropdown-menu {
+	display: none; position: absolute; top: 100%; left: 0; background: var(--ph-surface-1); border: 2px solid var(--ph-surface-3);
+	min-width: 160px; z-index: var(--ph-z-dropdown); box-shadow: 4px 4px 0 #000; margin-top: 8px; padding: 5px 0;
 }
+.ph-dropdown-wrapper.active .ph-dropdown-menu { display: block; animation: phSlideDown 0.2s ease-out; }
+.ph-dropdown-item { display: block; padding: 10px 15px; color: var(--ph-white); cursor: pointer; }
+.ph-dropdown-item:hover { background: var(--ph-surface-3); color: var(--ph-cyan); }
+
+@keyframes phSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ============================================================
-   22. TEXT LINK
-   Styled anchor with dashed underline that transitions to
-   a solid filled highlight on hover.
+   7. FORM ELEMENTS (Inputs, Textarea, Select, Checkbox, Radio, Upload)
+   Native elements styled aggressively for the aesthetic.
    ============================================================ */
-.ph-link {
-	color: var(--ph-cyan);
-	text-decoration: none;
-	border-bottom: 1px dashed var(--ph-cyan);
-	-webkit-transition: all 0.2s;
-	transition: all 0.2s;
-}
+.ph-form-field { margin-bottom: 20px; }
+.ph-form-label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--ph-cyan); font-size: 0.9rem; text-transform: uppercase; }
 
-.ph-link:hover {
-	background: var(--ph-cyan);
-	color: var(--ph-bg);
-	border-bottom-style: solid;
+/* Base Inputs */
+.ph-input, .ph-textarea, .ph-select {
+	width: 100%; background: var(--ph-surface-2); color: var(--ph-white); padding: 12px; font-family: var(--ph-font-mono);
+	font-size: 1rem; border: 1px solid var(--ph-surface-3); border-left: 4px solid var(--ph-surface-3); outline: none; transition: all 0.2s;
+	border-radius: 0px;
 }
+.ph-input:focus, .ph-textarea:focus, .ph-select:focus { border-color: var(--ph-amber); border-left-color: var(--ph-amber); background: #1a1816; }
+
+/* States */
+.ph-input.is-error { border-color: var(--ph-red); border-left-color: var(--ph-red); }
+.ph-input.is-success { border-color: var(--ph-green); border-left-color: var(--ph-green); }
+
+/* Customizing Native Date/Time/Color/File Pickers */
+input[type="color"].ph-input { padding: 4px; height: 48px; cursor: pointer; }
+input[type="date"].ph-input::-webkit-calendar-picker-indicator, input[type="time"].ph-input::-webkit-calendar-picker-indicator { filter: invert(1) sepia(1) saturate(5) hue-rotate(175deg); cursor: pointer; }
+input[type="file"].ph-input { padding: 8px; }
+input[type="file"]::file-selector-button { background: var(--ph-surface-3); color: var(--ph-white); border: none; padding: 5px 10px; margin-right: 10px; cursor: pointer; font-family: var(--ph-font-mono); text-transform: uppercase; }
+
+/* Radio & Checkbox (Pure CSS hack using appearance) */
+.ph-checkbox-wrapper, .ph-radio-wrapper { display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 10px; }
+.ph-checkbox, .ph-radio { appearance: none; width: 20px; height: 20px; border: 2px solid var(--ph-surface-3); background: var(--ph-surface-2); cursor: pointer; position: relative; }
+.ph-radio { border-radius: 50%; }
+.ph-checkbox:checked, .ph-radio:checked { border-color: var(--ph-amber); }
+.ph-checkbox:checked::after { content: "✓"; position: absolute; top: -2px; left: 3px; color: var(--ph-amber); font-weight: bold; }
+.ph-radio:checked::after { content: ""; position: absolute; inset: 4px; background: var(--ph-amber); border-radius: 50%; }
+
+/* Toggle / Switch */
+.ph-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.ph-switch input { opacity: 0; width: 0; height: 0; }
+.ph-slider { position: absolute; cursor: pointer; inset: 0; background: var(--ph-surface-3); border: 1px solid var(--ph-white); transition: .2s; }
+.ph-slider::before { content: ""; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: var(--ph-white); transition: .2s; }
+input:checked + .ph-slider { background: var(--ph-green); border-color: var(--ph-green); }
+input:checked + .ph-slider::before { transform: translateX(26px); background: var(--ph-bg); }
 
 /* ============================================================
-   23. CUSTOM LIST
-   Unstyled <ul> with ">" markers in amber for top-level
-   items and ">>" in cyan for nested items.
+   8. DATA DISPLAY (Table, Description List, Badge, Avatar)
    ============================================================ */
-ul.ph-list {
-	list-style: none;
-	padding-left: 5px;
-}
+/* Data Grid / Table */
+.ph-table-container { overflow-x: auto; border: 1px solid var(--ph-surface-3); }
+.ph-table { width: 100%; border-collapse: collapse; text-align: left; }
+.ph-table th, .ph-table td { padding: 12px 15px; border-bottom: 1px solid var(--ph-surface-3); }
+.ph-table th { background: var(--ph-surface-2); color: var(--ph-cyan); text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+.ph-table tbody tr:hover { background: rgba(0, 243, 243, 0.05); }
 
-ul.ph-list li {
-	margin-bottom: 6px;
-}
+/* Description List */
+.ph-desc-list { display: grid; grid-template-columns: minmax(120px, max-content) 1fr; gap: 10px 20px; }
+.ph-desc-list dt { color: var(--ph-surface-3); text-transform: uppercase; font-size: 0.85rem; }
+.ph-desc-list dd { color: var(--ph-white); font-weight: bold; margin: 0; }
 
-ul.ph-list li::before {
-	content: ">";
-	color: var(--ph-amber);
-	margin-right: 8px;
-	font-weight: 700;
-}
+/* Badge / Chip */
+.ph-badge { display: inline-flex; align-items: center; padding: 2px 8px; font-size: 0.75rem; border: 1px solid currentColor; text-transform: uppercase; white-space: nowrap; }
+.ph-badge-cyan { color: var(--ph-cyan); }
+.ph-badge-amber { color: var(--ph-amber); }
+.ph-chip { background: var(--ph-surface-2); padding: 4px 10px; border-radius: 20px; display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--ph-surface-3); }
+.ph-chip-close { cursor: pointer; color: var(--ph-red); }
 
-ul.ph-list ul li::before {
-	content: ">>";
-	color: var(--ph-cyan);
-}
+/* Avatar */
+.ph-avatar { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; background: var(--ph-surface-3); color: var(--ph-amber); font-weight: bold; font-size: 1.2rem; border: 2px solid var(--ph-amber); text-transform: uppercase; overflow: hidden; }
+.ph-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Image w/ Placeholder logic handled via bg */
+.ph-img { display: block; max-width: 100%; height: auto; border: 1px solid var(--ph-surface-3); background: repeating-linear-gradient(45deg, var(--ph-surface-2), var(--ph-surface-2) 10px, var(--ph-bg) 10px, var(--ph-bg) 20px); }
+
+/* Code Block */
+.ph-code-block { background: #050505; color: var(--ph-green); padding: 15px; border: 1px solid var(--ph-surface-3); overflow-x: auto; font-family: var(--ph-font-mono); position: relative; }
+.ph-code-block::before { content: ">_"; position: absolute; top: 5px; right: 10px; color: var(--ph-surface-3); font-weight: bold; }
+
+/* Stats */
+.ph-stat { border-left: 4px solid var(--ph-amber); padding-left: 15px; }
+.ph-stat-value { font-size: 2.5rem; font-family: var(--ph-font-display); line-height: 1; margin-bottom: 5px; }
+.ph-stat-label { color: var(--ph-surface-3); text-transform: uppercase; font-size: 0.85rem; }
 
 /* ============================================================
-   24. BUTTON GROUP
-   Flex container for horizontally arranging multiple
-   buttons. Wraps naturally when space runs out.
+   9. FEEDBACK & OVERLAYS (Alert, Toast, Modal, Tooltip, Skeleton)
    ============================================================ */
-.ph-buttongroup {
-	display: -webkit-flex;
-	display: flex;
-	gap: 15px;
-	-webkit-flex-wrap: wrap;
-	flex-wrap: wrap;
-}
+/* Alert / Banner */
+.ph-alert { padding: 15px; border-left: 4px solid; display: flex; gap: 15px; background: var(--ph-surface-1); margin-bottom: 20px; align-items: flex-start; }
+.ph-alert-info { border-color: var(--ph-cyan); color: var(--ph-cyan); }
+.ph-alert-warn { border-color: var(--ph-amber); color: var(--ph-amber); }
+.ph-alert-error { border-color: var(--ph-red); color: var(--ph-red); }
 
-/* ============================================================
-   25. ICON BUTTON
-   Square-shaped button sized for a single icon glyph
-   (typically from Remix Icons).
-   ============================================================ */
-.ph-iconbutton {
-	width: 44px;
-	height: 44px;
-	display: -webkit-inline-flex;
-	display: inline-flex;
-	-webkit-align-items: center;
-	align-items: center;
-	-webkit-justify-content: center;
-	justify-content: center;
-	border: 2px solid var(--ph-surface-3);
-	background: var(--ph-surface-2);
-	color: var(--ph-white);
-	cursor: pointer;
-	font-size: 1.25rem;
-	-webkit-transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
-	transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
-	-webkit-tap-highlight-color: transparent;
-}
+/* Toast Notification Wrapper */
+#ph-toast-container { position: fixed; bottom: 20px; right: 20px; z-index: var(--ph-z-toast); display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.ph-toast { pointer-events: auto; background: var(--ph-surface-2); border: 1px solid var(--ph-cyan); padding: 15px 20px; min-width: 250px; box-shadow: 4px 4px 0 rgba(0,0,0,0.8); animation: phSlideLeft 0.3s forwards; display: flex; justify-content: space-between; align-items: center; }
+@keyframes phSlideLeft { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-.ph-iconbutton:hover {
-	border-color: var(--ph-amber);
-	color: var(--ph-amber);
-	box-shadow: 0 0 10px rgba(255, 176, 0, 0.3);
-}
+/* Tooltip (Pure CSS attribute based) */
+[data-tooltip] { position: relative; cursor: help; }
+[data-tooltip]::before, [data-tooltip]::after { position: absolute; opacity: 0; visibility: hidden; transition: all 0.2s; z-index: var(--ph-z-tooltip); pointer-events: none; }
+[data-tooltip]::before { content: attr(data-tooltip); bottom: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--ph-surface-1); color: var(--ph-white); padding: 5px 10px; border: 1px solid var(--ph-amber); white-space: nowrap; font-size: 0.8rem; box-shadow: 2px 2px 0 #000; }
+[data-tooltip]:hover::before, [data-tooltip]:focus::before { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(-5px); }
 
-/* ============================================================
-   26. BANNER / NOTIFICATION BAR
-   Full-width alert strip with message text and an optional
-   dismiss button. Color set via modifier class.
-   ============================================================ */
-.ph-banner {
-	display: -webkit-flex;
-	display: flex;
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
-	-webkit-align-items: center;
-	align-items: center;
-	padding: 12px 20px;
-	margin-bottom: 20px;
-	border: 1px solid currentColor;
-	background: rgba(0, 0, 0, 0.4);
-	-webkit-flex-wrap: wrap;
-	flex-wrap: wrap;
-	gap: 10px;
-}
-
-.ph-banner-amber {
-	color: var(--ph-amber);
-	border-color: var(--ph-amber);
-}
-
-/* Close / dismiss control inside the banner */
-.ph-banner-close {
-	cursor: pointer;
-	font-weight: bold;
-	padding: 4px;
-	background: none;
-	border: none;
-	color: inherit;
-	font-family: inherit;
-	font-size: inherit;
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
-}
-
-/* ============================================================
-   27. FORM CONTROLS — TEXT INPUT, TEXTAREA, SELECT
-   Unified styling for all text-entry form elements. Features
-   a thick left-border accent that highlights on focus.
-   Font-size is set to 1rem (16px) to prevent iOS Safari
-   from zooming into the field on focus.
-   ============================================================ */
-.ph-textinput,
-.ph-textarea,
-.ph-select {
-	width: 100%;
-	display: block;
-	background: var(--ph-surface-2);
-	color: var(--ph-white);
-	padding: 12px;
-	font-family: var(--ph-font-mono);
-	margin-bottom: 15px;
-	font-size: 1rem;
-	border: 1px solid var(--ph-surface-3);
-	border-left: 4px solid var(--ph-surface-3);
-	border-radius: 0 !important;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	box-shadow: none;
-	outline: none;
-	caret-color: var(--ph-amber);
-	max-width: 100%;
-}
-
-/* Focus state — amber accent */
-.ph-textinput:focus,
-.ph-textarea:focus,
-.ph-select:focus {
-	outline: none;
-	border-color: var(--ph-amber);
-	border-left-color: var(--ph-amber);
-	background: #1a1816;
-	box-shadow: 0 0 0 1px var(--ph-amber);
-}
-
-/* Custom dropdown arrow for <select> using CSS gradients
-   to replace the native browser chevron */
-.ph-select {
-	background-image:
-		linear-gradient(45deg, transparent 50%, var(--ph-amber) 50%),
-		linear-gradient(135deg, var(--ph-amber) 50%, transparent 50%);
-	background-position:
-		calc(100% - 20px) calc(1em + 2px),
-		calc(100% - 15px) calc(1em + 2px);
-	background-size: 5px 5px, 5px 5px;
-	background-repeat: no-repeat;
-	padding-right: 40px;
-}
-
-/* ============================================================
-   28. TOGGLE SWITCH
-   Custom on/off switch. The native <input type="checkbox">
-   is visually hidden; the .ph-slider track and its ::before
-   knob provide the visual representation.
-   ============================================================ */
-.ph-toggleswitch {
-	position: relative;
-	display: inline-block;
-	width: 54px;
-	height: 28px;
-	vertical-align: middle;
-}
-
-/* Hide the native checkbox accessibly */
-.ph-toggleswitch input {
-	opacity: 0;
-	width: 0;
-	height: 0;
-	position: absolute;
-}
-
-/* Switch track */
-.ph-slider {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: var(--ph-surface-3);
-	border: 1px solid var(--ph-white);
-	-webkit-transition: background-color 0.2s, border-color 0.2s;
-	transition: background-color 0.2s, border-color 0.2s;
-}
-
-/* Switch knob */
-.ph-slider::before {
-	position: absolute;
-	content: "";
-	height: 18px;
-	width: 18px;
-	left: 4px;
-	bottom: 4px;
-	background-color: var(--ph-white);
-	-webkit-transition: -webkit-transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Checked state — green track, dark knob slides right */
-input:checked + .ph-slider {
-	background-color: var(--ph-green);
-	border-color: var(--ph-green);
-}
-
-input:checked + .ph-slider::before {
-	-webkit-transform: translateX(26px);
-	transform: translateX(26px);
-	background: var(--ph-bg);
-}
-
-/* ============================================================
-   29. SEGMENTED CONTROL (TAB BAR)
-   Row of mutually exclusive options (like iOS segmented
-   control). The .active segment is visually highlighted.
-   Wraps on small screens via flex-wrap.
-   ============================================================ */
-.ph-segmentedcontrol {
-	display: -webkit-inline-flex;
-	display: inline-flex;
-	border: 1px solid var(--ph-surface-3);
-	background: var(--ph-surface-2);
-	width: 100%;
-	-webkit-flex-wrap: wrap;
-	flex-wrap: wrap;
-}
-
-.ph-segment-btn {
-	-webkit-flex: 1 1 auto;
-	flex: 1 1 auto;
-	padding: 12px;
-	cursor: pointer;
-	text-align: center;
-	border-right: 1px solid var(--ph-surface-3);
-	font-size: 0.9rem;
-	-webkit-transition: all 0.2s;
-	transition: all 0.2s;
-	white-space: nowrap;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.ph-segment-btn:last-child {
-	border-right: none;
-}
-
-.ph-segment-btn.active {
-	background: var(--ph-cyan);
-	color: var(--ph-bg);
-	font-weight: bold;
-}
-
-/* ============================================================
-   30. DATA TABLE
-   Styled <table> with colored header row and subtle hover
-   highlight on rows. For responsive behavior, wrap in a
-   .ph-datatable-wrapper div for horizontal scrolling.
-   ============================================================ */
-
-/* Optional scroll wrapper — add around <table> in HTML */
-.ph-datatable-wrapper {
-	width: 100%;
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-	margin-bottom: 20px;
-}
-
-.ph-datatable {
-	width: 100%;
-	border-collapse: collapse;
-	margin-bottom: 20px;
-	font-size: 0.9rem;
-}
-
-.ph-datatable th {
-	background: var(--ph-surface-3);
-	color: var(--ph-amber);
-	padding: 12px;
-	text-align: left;
-	text-transform: uppercase;
-	border: 1px solid #4a4a4a;
-	letter-spacing: 1px;
-	white-space: nowrap;
-}
-
-.ph-datatable td {
-	border: 1px solid var(--ph-surface-3);
-	padding: 12px;
-	color: var(--ph-white);
-}
-
-.ph-datatable tr:hover {
-	background: rgba(255, 255, 255, 0.03);
-}
-
-/* ============================================================
-   31. PROGRESS BAR
-   Horizontal bar with a colored fill. Set the fill width
-   inline: <div class="ph-progress-fill" style="width:60%">
-   ============================================================ */
-.ph-progressbar {
-	width: 100%;
-	height: 6px;
-	background: var(--ph-surface-2);
-	border: 1px solid var(--ph-surface-3);
-	position: relative;
-	overflow: hidden;
-}
-
-.ph-progress-fill {
-	height: 100%;
-	background: var(--ph-green);
-	box-shadow: 0 0 4px var(--ph-green);
-	-webkit-transition: width 0.4s ease;
-	transition: width 0.4s ease;
-}
-
-/* ============================================================
-   32. LABEL / BADGE
-   Small inline status indicators with colored borders.
-   Used for tags, statuses, categories, etc.
-   ============================================================ */
-.ph-label,
-.ph-label-amber,
-.ph-label-cyan,
-.ph-label-orange,
-.ph-label-red,
-.ph-label-green {
-	display: inline-block;
-	padding: 2px 8px;
-	font-size: 0.75rem;
-	text-transform: uppercase;
-	margin-right: 5px;
-	vertical-align: middle;
-	white-space: nowrap;
-}
-
-.ph-label-amber  { border: 1px solid var(--ph-amber);  color: var(--ph-amber); }
-.ph-label-cyan   { border: 1px solid var(--ph-cyan);   color: var(--ph-cyan); }
-.ph-label-orange { border: 1px solid var(--ph-orange); color: var(--ph-orange); }
-.ph-label-red    { border: 1px solid var(--ph-red);    color: var(--ph-red); }
-.ph-label-green  { border: 1px solid var(--ph-green);  color: var(--ph-green); }
-
-/* Bold state indicator label (e.g. "ONLINE", "ACTIVE") */
-.ph-statelabel {
-	font-weight: bold;
-	letter-spacing: 1px;
-}
-
-/* ============================================================
-   33. TIMELINE
-   Vertical timeline with a continuous left border line.
-   Each item has a circular node marker (::before) positioned
-   on the line.
-   ============================================================ */
-.ph-timeline {
-	position: relative;
-	border-left: 2px solid var(--ph-surface-3);
-	padding-left: 30px;
-	margin-left: 10px;
-	max-width: 100%;
-}
-
-.ph-timeline-item {
-	position: relative;
-	margin-bottom: 30px;
-}
-
-/* Circular node marker on the timeline line */
-.ph-timeline-item::before {
-	content: "";
-	position: absolute;
-	left: -37px;
-	top: 4px;
-	width: 12px;
-	height: 12px;
-	background: var(--ph-bg);
-	border: 2px solid var(--ph-amber);
-	box-shadow: 0 0 8px var(--ph-amber);
-}
-
-/* ============================================================
-   34. COLLAPSIBLE DETAILS / ACCORDION
-   Uses the native <details> element. Custom summary styling
-   with [+]/[-] toggle indicators. Content panel slides
-   open below.
-   ============================================================ */
-details.ph-details {
-	max-width: 100%;
-	margin-bottom: 4px;
-}
-
-details.ph-details summary {
-	cursor: pointer;
-	padding: 14px;
-	background: var(--ph-surface-1);
-	border: 1px solid var(--ph-surface-3);
-	list-style: none;
-	font-weight: bold;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
-	-webkit-align-items: center;
-	align-items: center;
-	outline: none;
-}
-
-/* Remove default disclosure triangle in WebKit/Blink */
-details.ph-details summary::-webkit-details-marker {
-	display: none;
-}
-
-/* Remove default marker in Firefox */
-details.ph-details summary::marker {
-	content: "";
-	display: none;
-}
-
-/* Custom toggle indicator: [+] when collapsed */
-details.ph-details summary::after {
-	content: "[+]";
-	color: var(--ph-amber);
-	font-family: monospace;
-	-webkit-flex-shrink: 0;
-	flex-shrink: 0;
-	margin-left: 10px;
-}
-
-/* Toggle indicator: [-] when expanded */
-details.ph-details[open] summary::after {
-	content: "[-]";
-}
-
-/* Revealed content panel */
-details.ph-details .content {
-	padding: 15px;
-	border: 1px solid var(--ph-surface-3);
-	border-top: none;
-	background: rgba(0, 0, 0, 0.2);
-	overflow-x: auto;
-	-webkit-overflow-scrolling: touch;
-}
-
-/* ============================================================
-   35. DIVIDERS
-   Horizontal and vertical visual separators.
-   ============================================================ */
-.ph-divider {
-	width: 100%;
-	height: 2px;
-	background: var(--ph-surface-3);
-	margin: 25px 0;
-}
-
-.ph-divider-vertical {
-	width: 2px;
-	height: 24px;
-	background: var(--ph-surface-3);
-}
-
-/* ============================================================
-   36. INLINE MESSAGE
-   Bordered callout box for tips, warnings, or notes.
-   Left accent border with icon + text side by side.
-   ============================================================ */
-.ph-inlinemessage {
-	padding: 12px;
-	border-left: 4px solid var(--ph-cyan);
-	background: rgba(0, 163, 163, 0.15);
-	margin: 10px 0;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-align-items: flex-start;
-	align-items: flex-start;
-	gap: 10px;
-}
-
-/* ============================================================
-   37. MODAL OVERLAY & DIALOG
-   Full-screen semi-transparent backdrop with a centered
-   content card. Hidden by default; add the .active class
-   to show the modal.
-   ============================================================ */
-
-/* Backdrop — covers entire viewport */
+/* Modal & Focus Trap Backdrop */
 .ph-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.85);
-	display: none;
-	-webkit-justify-content: center;
-	justify-content: center;
-	-webkit-align-items: center;
-	align-items: center;
-	z-index: 2000;
-	-webkit-backdrop-filter: blur(4px);
-	backdrop-filter: blur(4px);
-	padding: 20px;
+	position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); display: none;
+	justify-content: center; align-items: center; z-index: var(--ph-z-modal); backdrop-filter: blur(2px);
 }
-
-/* Show the modal */
-.ph-overlay.active {
-	display: -webkit-flex;
-	display: flex;
-}
-
-/* Modal content card */
+.ph-overlay.active { display: flex; }
 .ph-modal-content {
-	width: 100%;
-	max-width: 500px;
-	background: var(--ph-bg);
-	border: 2px solid var(--ph-white);
-	padding: 30px;
-	box-shadow: 12px 12px 0 var(--ph-surface-3);
-	position: relative;
-	max-height: 90vh;
-	overflow-y: auto;
-	-webkit-overflow-scrolling: touch;
+	background: var(--ph-bg); border: 2px solid var(--ph-white); padding: 30px; box-shadow: 10px 10px 0 var(--ph-surface-3);
+	max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;
+	animation: phZoomIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+@keyframes phZoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ph-modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; color: var(--ph-white); cursor: pointer; font-size: 1.5rem; }
+
+/* Skeleton / Spinner / Empty State */
+.ph-skeleton { background: var(--ph-surface-2); position: relative; overflow: hidden; border-radius: var(--ph-radius-sm); }
+.ph-skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: phShimmer 1.5s infinite; }
+@keyframes phShimmer { 100% { transform: translateX(100%); } }
+
+.ph-spinner { display: inline-block; width: 24px; height: 24px; border: 3px solid var(--ph-surface-3); border-top-color: var(--ph-cyan); border-radius: 50%; animation: phSpin 1s linear infinite; }
+@keyframes phSpin { to { transform: rotate(360deg); } }
+
+.ph-empty-state { text-align: center; padding: 40px 20px; border: 1px dashed var(--ph-surface-3); color: var(--ph-surface-3); }
+.ph-empty-state i { font-size: 3rem; margin-bottom: 15px; color: var(--ph-surface-3); }
+
+/* Media Objects */
+.ph-media-object { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px; }
+.ph-media-object > img, .ph-media-object > .ph-img { width: 250px; flex-shrink: 0; border: 2px solid var(--ph-surface-3); object-fit: cover; }
+.ph-media-body { flex-grow: 1; min-width: 0; }
+.ph-media-reverse { flex-direction: row-reverse; }
 
 /* ============================================================
-   38. TEXT TRUNCATION
-   Single-line truncation with trailing ellipsis. Apply to
-   any block-level or inline-block element.
+   10. UTILITIES & RESPONSIVE LOGIC
+   Freedom to override and adapt.
    ============================================================ */
-.ph-truncate {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	max-width: 100%;
-	display: block;
-}
+.ph-visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+.ph-text-center { text-align: center; } .ph-text-right { text-align: right; }
+.ph-w-full { width: 100%; }
+.ph-mt-4 { margin-top: 1rem; } .ph-mb-4 { margin-bottom: 1rem; } .ph-mb-8 { margin-bottom: 2rem; }
 
-/* ============================================================
-   39. CARD COMPONENT
-   Content card with optional image area, body, title, and
-   description. Decorative corner brackets match the block
-   component. Hover state adds border glow.
-   ============================================================ */
-.ph-card {
-	position: relative;
-	border: 2px solid var(--ph-surface-3);
-	background: var(--ph-surface-1);
-	box-shadow: 6px 6px 0 #000;
-	overflow: hidden;
-	-webkit-transition: border-color 0.3s, box-shadow 0.3s;
-	transition: border-color 0.3s, box-shadow 0.3s;
-}
+/* Colors Utility */
+.ph-text-amber { color: var(--ph-amber) !important; }
+.ph-text-cyan { color: var(--ph-cyan) !important; }
 
-.ph-card:hover {
-	border-color: var(--ph-amber);
-	box-shadow: 6px 6px 0 #000, 0 0 20px rgba(255, 176, 0, 0.15);
-}
-
-/* Corner bracket decorations (same pattern as .ph-block) */
-.ph-card::before,
-.ph-card::after {
-	content: "";
-	position: absolute;
-	width: 10px;
-	height: 10px;
-	border: 2px solid var(--ph-white);
-	pointer-events: none;
-	z-index: 2;
-}
-
-.ph-card::before {
-	top: -2px;
-	left: -2px;
-	border-bottom: none;
-	border-right: none;
-}
-
-.ph-card::after {
-	bottom: -2px;
-	right: -2px;
-	border-top: none;
-	border-left: none;
-}
-
-/* --- Card image area --- */
-.ph-card-img-area {
-	width: 100%;
-	height: 160px;
-	overflow: hidden;
-	border-bottom: 2px solid var(--ph-surface-3);
-	position: relative;
-	background: var(--ph-surface-2);
-	display: -webkit-flex;
-	display: flex;
-	-webkit-align-items: center;
-	align-items: center;
-	-webkit-justify-content: center;
-	justify-content: center;
-}
-
-/* Image with desaturated default that reveals color on hover */
-.ph-card-img-area img {
-	width: 100%;
-	height: 100%;
-	-o-object-fit: cover;
-	object-fit: cover;
-	-webkit-filter: grayscale(30%) contrast(1.1);
-	filter: grayscale(30%) contrast(1.1);
-	-webkit-transition: filter 0.3s;
-	transition: filter 0.3s;
-}
-
-.ph-card:hover .ph-card-img-area img {
-	-webkit-filter: grayscale(0%) contrast(1.05);
-	filter: grayscale(0%) contrast(1.05);
-}
-
-/* Placeholder text shown when no actual image is present */
-.ph-card-img {
-	font-family: var(--ph-font-display);
-	font-size: 2rem;
-	color: var(--ph-surface-3);
-	letter-spacing: 4px;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-/* Badge/tag overlay on the card image */
-.ph-card-img-tag {
-	position: absolute;
-	top: 8px;
-	right: 8px;
-	z-index: 2;
-}
-
-/* --- Card body text area --- */
-.ph-card-body {
-	padding: 16px;
-}
-
-.ph-card-title {
-	font-family: var(--ph-font-display);
-	font-size: 0.9rem;
-	color: var(--ph-amber);
-	text-transform: uppercase;
-	letter-spacing: 1px;
-	margin-bottom: 8px;
-	overflow-wrap: break-word;
-	word-break: break-word;
-}
-
-.ph-card-desc {
-	font-size: 0.85rem;
-	line-height: 1.6;
-	margin-bottom: 12px;
-}
-
-/* ============================================================
-   40. SECTOR TAG
-   Small decorative label with "//" prefix. Used above
-   content sections to indicate categories or section IDs.
-   ============================================================ */
-.ph-sector-tag {
-	display: inline-block;
-	font-size: 0.65rem;
-	font-family: var(--ph-font-display);
-	text-transform: uppercase;
-	letter-spacing: 3px;
-	color: var(--ph-surface-3);
-	margin-bottom: 15px;
-}
-
-.ph-sector-tag::before {
-	content: "// ";
-	color: var(--ph-amber);
-}
-
-/* ============================================================
-   41. RESPONSIVE BREAKPOINTS
-   
-   Strategy:
-     > 1024px    Desktop (default styles, no query needed)
-     769-1024px  Tablet / small laptop — minor adjustments
-     481-768px   Phone landscape / small tablet — sidebar
-                 becomes a slide-out drawer, grids collapse
-     <= 480px    Phone portrait — maximum compaction
-   
-   Also includes:
-     - Landscape phone (short viewport) adjustments
-     - prefers-reduced-motion for accessibility
-     - Print styles
-   ============================================================ */
-
-/* ---------------------------------------------------------
-   41a. TABLET / SMALL LAPTOP (769px – 1024px)
-   Slightly tighter padding. Grid columns stay as defined
-   since 1024px is wide enough for 2 and 3 column layouts.
-   --------------------------------------------------------- */
-@media (max-width: 1024px) {
-	.ph-main {
-		padding: 25px 20px;
-	}
-}
-
-/* ---------------------------------------------------------
-   41b. PHONE LANDSCAPE / SMALL TABLET (481px – 768px)
-   Major layout shift: sidebar becomes a hidden drawer,
-   main content takes full width, multi-column grids
-   collapse.
-   --------------------------------------------------------- */
+/* Responsive break: Mobile (Under 768px) */
 @media (max-width: 768px) {
-	/* Stack layout vertically */
-	.ph-splitpagelayout {
-		-webkit-flex-direction: column;
-		flex-direction: column;
-	}
-
-	/* Sidebar becomes a slide-out drawer from the left */
-	.ph-sidebar {
-		position: fixed;
-		top: var(--ph-header-height);
-		left: 0;
-		bottom: 0;
-		width: 100%;
-		max-width: 300px;
-		height: calc(100% - var(--ph-header-height));
-		-webkit-transform: translateX(-100%);
-		transform: translateX(-100%);
-		border-right: 2px solid var(--ph-amber);
-		box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8);
-		background: #0a0908;
-	}
-
-	/* Drawer visible when toggled */
-	.ph-sidebar.active {
-		-webkit-transform: translateX(0);
-		transform: translateX(0);
-	}
-
-	/* Show the hamburger toggle */
-	.ph-mobile-toggle {
-		display: block !important;
-		margin-right: 15px;
-	}
-
-	/* Main content: remove sidebar offset, use 100% not
-	   100vw to avoid horizontal overflow from scrollbar */
-	.ph-main {
-		margin-left: 0;
-		padding: 20px 15px;
-		width: 100%;
-	}
-
-	/* 3-column grid drops to 2 columns */
-	.ph-col-3 {
-		grid-template-columns: repeat(2, 1fr);
-	}
-
-	/* 2-column grid drops to single column */
-	.ph-col-2 {
-		grid-template-columns: 1fr;
-	}
-
-	/* Table horizontal scroll (keep display:table intact
-	   so column alignment is preserved; rely on the
-	   .ph-datatable-wrapper for overflow scrolling, or
-	   allow the table itself to scroll) */
-	.ph-datatable {
-		display: block;
-		overflow-x: auto;
-		-webkit-overflow-scrolling: touch;
-	}
-
-	/* Slightly more compact timeline */
-	.ph-timeline {
-		padding-left: 20px;
-		margin-left: 5px;
-	}
-
-	.ph-timeline-item::before {
-		left: -27px;
-		width: 10px;
-		height: 10px;
-	}
-
-	/* Scale down large display text */
-	.text-xxl {
-		font-size: 1.5rem;
-	}
-
-	.text-xl {
-		font-size: 1.25rem;
-	}
-
-	/* Ensure action bars wrap their children */
-	.ph-actionbar {
-		-webkit-flex-wrap: wrap;
-		flex-wrap: wrap;
-	}
-
-	/* Modal: tighter padding, full available width */
-	.ph-modal-content {
-		padding: 20px;
-		box-shadow: 8px 8px 0 var(--ph-surface-3);
-		max-width: 100%;
-	}
-
-	/* Reduce decorative shadows for cleaner mobile look */
-	.ph-block,
-	.ph-card {
-		box-shadow: 4px 4px 0px #000;
-	}
-
-	/* Logo: slightly smaller to fit alongside toggle */
-	.ph-logo {
-		font-size: 0.9rem;
-		letter-spacing: 1px;
-	}
+	.ph-splitpagelayout { flex-direction: column; }
+	.ph-sidebar { transform: translateX(-100%); width: 100%; max-width: 320px; }
+	.ph-sidebar.active { transform: translateX(0); }
+	.ph-main { margin-left: 0; padding: 20px 15px; }
+	.ph-mobile-toggle { display: block !important; cursor: pointer; color: var(--ph-amber); font-size: 1.5rem; background: none; border: none; }
+	/* Grids fall back to 1 column */
+	.ph-grid-cols-2, .ph-grid-cols-3 { grid-template-columns: 1fr; }
+	.ph-media-object { flex-direction: column; }
+	.ph-media-object > img, .ph-media-object > .ph-img { width: 100%; height: auto; }
 }
 
-/* ---------------------------------------------------------
-   41c. PHONE PORTRAIT (<= 480px)
-   Maximum compaction. Everything stacks vertically, font
-   sizes shrink, padding is minimal.
-   --------------------------------------------------------- */
-@media (max-width: 480px) {
-	body {
-		font-size: 14px;
-	}
+@media (min-width: 769px) { .ph-mobile-toggle { display: none; } }
 
-	.ph-main {
-		padding: 15px 10px;
-	}
-
-	.ph-pageheader {
-		padding: 0 12px;
-	}
-
-	/* Further scale headings */
-	.text-xxl {
-		font-size: 1.3rem;
-	}
-
-	.text-xl {
-		font-size: 1.1rem;
-	}
-
-	.text-lg {
-		font-size: 1rem;
-	}
-
-	/* Tighter block padding */
-	.ph-block {
-		padding: 15px 12px;
-	}
-
-	/* Buttons: reduce padding but keep inline sizing so
-	   they don't force full-width unless explicitly wanted */
-	.ph-button {
-		padding: 10px 16px;
-		font-size: 0.85rem;
-	}
-
-	/* Button groups stack vertically on very small screens */
-	.ph-buttongroup {
-		-webkit-flex-direction: column;
-		flex-direction: column;
-		gap: 10px;
-	}
-
-	/* Within a vertical button group, buttons fill width */
-	.ph-buttongroup .ph-button {
-		width: 100%;
-		margin-right: 0;
-	}
-
-	/* Shorter card images on small phones */
-	.ph-card-img-area {
-		height: 120px;
-	}
-
-	/* Segmented control: stack segments vertically */
-	.ph-segmentedcontrol {
-		-webkit-flex-direction: column;
-		flex-direction: column;
-	}
-
-	.ph-segment-btn {
-		border-right: none;
-		border-bottom: 1px solid var(--ph-surface-3);
-	}
-
-	.ph-segment-btn:last-child {
-		border-bottom: none;
-	}
-
-	/* Sidebar drawer takes full width on phone */
-	.ph-sidebar {
-		max-width: 100%;
-	}
-
-	/* Modal: even tighter */
-	.ph-modal-content {
-		padding: 16px;
-		box-shadow: 4px 4px 0 var(--ph-surface-3);
-	}
-
-	/* Timeline: tighter indent */
-	.ph-timeline {
-		padding-left: 15px;
-		margin-left: 2px;
-	}
-
-	.ph-timeline-item::before {
-		left: -22px;
-		width: 8px;
-		height: 8px;
-	}
-
-	/* 3-column grid also becomes single column at this size */
-	.ph-col-3 {
-		grid-template-columns: 1fr;
-	}
-
-	/* Banner stacks content vertically */
-	.ph-banner {
-		-webkit-flex-direction: column;
-		flex-direction: column;
-		-webkit-align-items: flex-start;
-		align-items: flex-start;
-		padding: 12px;
-	}
-}
-
-/* ---------------------------------------------------------
-   41d. LANDSCAPE PHONE (wide but very short viewport)
-   When the phone is rotated, vertical space is scarce.
-   Reduce header height and constrain tall elements.
-   --------------------------------------------------------- */
-@media (max-height: 500px) and (orientation: landscape) {
-	/* Compact header to reclaim vertical space */
-	.ph-pageheader {
-		height: 48px;
-	}
-
-	/* Adjust layout offset to match reduced header */
-	.ph-splitpagelayout {
-		padding-top: 48px;
-	}
-
-	.ph-sidebar {
-		top: 48px;
-		height: calc(100% - 48px);
-	}
-
-	/* Modal can't exceed the short viewport */
-	.ph-modal-content {
-		max-height: 85vh;
-		padding: 16px;
-	}
-
-	/* Shorter card images */
-	.ph-card-img-area {
-		height: 100px;
-	}
-}
-
-/* ============================================================
-   42. REDUCED MOTION PREFERENCE
-   Respects the user's OS-level "reduce motion" setting.
-   Disables the CRT flicker animation, scroll-reveal
-   transitions, and all other transitions/animations for
-   accessibility (e.g. vestibular disorder users).
-   ============================================================ */
+/* A11y: Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-	body::after {
-		-webkit-animation: none;
-		animation: none;
-	}
-
-	.ph-animate-scroll {
-		opacity: 1;
-		-webkit-transform: none;
-		transform: none;
-		-webkit-transition: none;
-		transition: none;
-	}
-
-	.ph-animate-fade {
-		opacity: 1;
-		-webkit-transition: none;
-		transition: none;
-	}
-
-	*,
-	*::before,
-	*::after {
-		-webkit-transition-duration: 0.01ms !important;
-		transition-duration: 0.01ms !important;
-		-webkit-animation-duration: 0.01ms !important;
-		animation-duration: 0.01ms !important;
-	}
+	*, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+	body::after { display: none; } /* Kill CRT flicker */
 }
 
-/* ============================================================
-   43. PRINT STYLES
-   Strip decorative elements, dark backgrounds, and shadows
-   so the content prints cleanly on paper.
-   ============================================================ */
-@media print {
-	/* Remove CRT overlays */
-	body::before,
-	body::after {
-		display: none !important;
-	}
-
-	/* Light background for printing */
-	body {
-		background: #fff;
-		color: #000;
-	}
-
-	/* Remove shadows and lighten borders */
-	.ph-block,
-	.ph-card {
-		box-shadow: none;
-		border-color: #ccc;
-	}
-
-	/* Hide navigation chrome */
-	.ph-sidebar,
-	.ph-pageheader,
-	.ph-mobile-toggle {
-		display: none !important;
-	}
-
-	/* Main content takes full width */
-	.ph-main {
-		margin-left: 0;
-		padding: 0;
-	}
-}
+/*
+	    ____  __                     __               __  ______
+	   / __ \/ /_  ____  _________  / /_  ____  _____/ / / /  _/
+	  / /_/ / __ \/ __ \/ ___/ __ \/ __ \/ __ \/ ___/ / / // /  
+	 / ____/ / / / /_/ (__  ) /_/ / / / / /_/ / /  / /_/ // /   
+	/_/   /_/ /_/\____/____/ .___/_/ /_/\____/_/   \____/___/   
+	                      /_/                 Robert Y. Stanford
+*/
